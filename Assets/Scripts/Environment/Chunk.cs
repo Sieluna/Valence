@@ -29,7 +29,7 @@ namespace Environment
 
         public event Func<bool> OnChunkUpdate;
         
-        private NativeBlockData blockData;
+        private NativeMapData blockData;
         private NativeLightData lightData;
         private NativeMeshData meshData;
 
@@ -72,7 +72,7 @@ namespace Environment
         private IEnumerator InitUpdater()
         {
             blocks = new Block[chunkSize.x * chunkSize.y * chunkSize.z]; // 实例化一堆Air         
-            blockData = new NativeBlockData(chunkSize);
+            blockData = new NativeMapData(chunkSize);
             yield return blockData.Generate(blocks, chunkPosition, chunkSize); // 等待noise生成
             dirty = true;
             initialized = true;

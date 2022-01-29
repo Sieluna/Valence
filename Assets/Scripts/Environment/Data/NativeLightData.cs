@@ -66,7 +66,7 @@ namespace Environment.Data
 
             jobHandle = new BuildLightSystem
             {
-                blockData = World.Instance.BlockData,
+                blockData = BlockData.Instance.Data,
                 blocksWithNeighbor = nativeBlocksWithNeighbor,
                 neighborHashMap = nativeNeighborHashMap,
                 chunkPosition = chunkPosition,

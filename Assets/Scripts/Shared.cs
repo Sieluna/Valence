@@ -1,7 +1,4 @@
 using System.Runtime.CompilerServices;
-using Environment;
-using Environment.Data;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -135,41 +132,6 @@ public static class Shared
     #endregion
 
     #region Functions
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte PackUVCoord(this int2 uv) => (byte) ((uv.x & 0xF) << 4 | ((uv.y & 0xF) << 0));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int2 UnpackUVCoord(this byte uvs) => new int2((uvs >> 4) & 0xF, (uvs >> 0) & 0xF);
-    
-    public static int2 GetBlockUV(this long data, int direction)
-        => ((byte) ((data >> (5 - direction) * 8) & 0xFFL)).UnpackUVCoord();
-
-    public static long GetBlockShape(this long data)
-        => (data >> 56) & 0xFFL;
-    
-    public static long PackBlockData(this BlockPrefab prefab)
-        => PackBlockData((byte) prefab.shape, 0, prefab.atlasPositions);
-    
-    public static long PackBlockData(byte first, byte second, int2[] uv)
-    {
-        var data = 0L;
-        data |= (first & 0xFFL) << 56; // blockTypeBuffer
-        data |= (second & 0xFFL) << 48; // empty byte
-        for (int i = 0, currentBit = 40; i < 6; i++, currentBit -= 8)
-            data |= (uv[i].PackUVCoord() & 0xFFL) << currentBit;
-        return data;
-    }
-    
-    public static (byte blockType, byte second,int2[] uvs) UnpackBlockData(long data)
-    {
-        var blockType = (byte) ((data >> 56) & 0xFFL);
-        var second = (byte) ((data >> 48) & 0xFFL);
-        var uvs = new int2[6];
-        for (int i = 0, currentBit = 40; i < 6; i++, currentBit -= 8)
-            uvs[i] = ((byte) ((data >> currentBit) & 0xFFL)).UnpackUVCoord();
-        return (blockType, second, uvs);
-    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int2 To2DIndex(this int index, int size)

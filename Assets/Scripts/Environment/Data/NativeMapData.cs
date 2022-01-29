@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace Environment.Data
 {
-    public class NativeBlockData
+    public class NativeMapData
     {
         private NativeArray<Block> nativeBlocks;
         public JobHandle jobHandle;
 
-        public NativeBlockData(int3 chunkSize) => nativeBlocks = new NativeArray<Block>(chunkSize.x * chunkSize.y * chunkSize.z, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+        public NativeMapData(int3 chunkSize) => nativeBlocks = new NativeArray<Block>(chunkSize.x * chunkSize.y * chunkSize.z, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
 
-        ~NativeBlockData()
+        ~NativeMapData()
         {
             jobHandle.Complete(); Dispose();
         }

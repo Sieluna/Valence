@@ -62,7 +62,7 @@ namespace Environment.Data
             jobHandle = new BuildMeshSystem
             {
                 blocks = nativeBlocks,
-                blockData = World.Instance.BlockData,
+                blockData = BlockData.Instance.Data,
                 chunkSize = chunkSize,
                 vertices = nativeVertices,
                 normals = nativeNormals,

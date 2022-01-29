@@ -27,8 +27,6 @@ namespace Environment
         private static readonly int AtlasY = Shader.PropertyToID("_AtlasY");
         private static readonly int AtlasRec = Shader.PropertyToID("_AtlasRec");
 
-        public NativeArray<long> BlockData => blockData;
-        
         /// <summary> Number to control <see cref="CanUpdate"/> [Flag] in order to handle chunk update </summary>
         public int UpdatingChunks { get; set; }
 
@@ -36,8 +34,6 @@ namespace Environment
 
         private void Awake()
         {
-            blockData = new NativeArray<long>(Enum.GetValues(typeof(BlockType)).Length, Allocator.Persistent);
-            Array.ForEach(Resources.LoadAll<BlockPrefab>("Blocks"), prefab => blockData[(byte) prefab.block] = prefab.PackBlockData());
             Shader.SetGlobalInt(AtlasX, Shared.AtlasSize.x);
             Shader.SetGlobalInt(AtlasY, Shared.AtlasSize.y);
             Shader.SetGlobalVector(AtlasRec, new Vector4(1.0f / Shared.AtlasSize.x, 1.0f / Shared.AtlasSize.y));
