@@ -21,7 +21,7 @@ namespace Environment
 
     public enum BlockShape : byte
     {
-        Empty, Block, Leaves, Foliage, Liquid
+        Empty, Block, Transparent, Foliage, Liquid
     }
 
 }

@@ -13,9 +13,11 @@ namespace Environment.Data
         private NativeArray<Block> nativeBlocks;
         public NativeArray<float3> nativeVertices;
         public NativeArray<float3> nativeNormals;
-        public NativeList<int> nativeIndices;
-        public NativeList<int> nativeSubIndices;
-        public NativeList<int> nativeMorIndices;
+        public NativeList<int> nativeBlockIndices;
+        public NativeList<int> nativeLiquidIndices;
+        public NativeList<int> nativeFoliageIndices;
+        public NativeList<int> nativeLeavesIndices;
+        public NativeList<int> nativeTransparentIndices;
         public NativeArray<float4> nativeUVs;
         public NativeArray<Color> nativeColors;
         public JobHandle jobHandle;
@@ -31,9 +33,10 @@ namespace Environment.Data
             nativeNormals = new NativeArray<float3>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             nativeUVs = new NativeArray<float4>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             nativeColors = new NativeArray<Color>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            nativeIndices = new NativeList<int>(18 * numBlocks, Allocator.TempJob);
-            nativeSubIndices = new NativeList<int>(36 * numLayer, Allocator.TempJob);
-            nativeMorIndices = new NativeList<int>(72 * numLayer, Allocator.TempJob);
+            nativeBlockIndices = new NativeList<int>(18 * numBlocks, Allocator.TempJob);
+            nativeLiquidIndices = new NativeList<int>(numLayer, Allocator.TempJob);
+            nativeFoliageIndices = new NativeList<int>(numLayer, Allocator.TempJob);
+            nativeTransparentIndices = new NativeList<int>(18 * numBlocks, Allocator.TempJob);
             counter = new NativeCounter(Allocator.TempJob);
         }
 
@@ -49,9 +52,10 @@ namespace Environment.Data
             if (nativeNormals.IsCreated) nativeNormals.Dispose();
             if (nativeUVs.IsCreated) nativeUVs.Dispose();
             if (nativeColors.IsCreated) nativeColors.Dispose();
-            if (nativeIndices.IsCreated) nativeIndices.Dispose();
-            if (nativeSubIndices.IsCreated) nativeSubIndices.Dispose();
-            if (nativeMorIndices.IsCreated) nativeMorIndices.Dispose();
+            if (nativeBlockIndices.IsCreated) nativeBlockIndices.Dispose();
+            if (nativeLiquidIndices.IsCreated) nativeLiquidIndices.Dispose();
+            if (nativeFoliageIndices.IsCreated) nativeFoliageIndices.Dispose();
+            if (nativeTransparentIndices.IsCreated) nativeTransparentIndices.Dispose();
             if (counter.IsCreated) counter.Dispose();
         }
 
@@ -68,9 +72,10 @@ namespace Environment.Data
                 normals = nativeNormals,
                 uvs = nativeUVs,
                 colors = nativeColors,
-                indices = nativeIndices,
-                subIndices = nativeSubIndices,
-                morIndices = nativeMorIndices,
+                blockIndices = nativeBlockIndices,
+                liquidIndices = nativeLiquidIndices,
+                foliageIndices = nativeFoliageIndices,
+                transparentIndices = nativeTransparentIndices,
                 lightData = lightData.nativeLightData,
                 counter = counter
             }.Schedule();

@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using Environment.System;
+using Unity.Burst;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -35,7 +37,7 @@ namespace Environment.Data
         private void OnDestroy() => m_NativeBlockData.Dispose();
     }
     
-    public static class BlockDataStatic
+    public static class BlockDataExtension
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte PackUVCoord(this int2 uv) => (byte) ((uv.x & 0xF) << 4 | ((uv.y & 0xF) << 0));

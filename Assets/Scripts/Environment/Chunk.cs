@@ -106,17 +106,20 @@ namespace Environment
             {
                 mesh.Clear();
                 colmesh.Clear();
-                mesh.subMeshCount = 3;
+                mesh.subMeshCount = 4;
                 mesh.SetVertices(meshData.nativeVertices, 0, verticesSize);
                 mesh.SetNormals(meshData.nativeNormals, 0, verticesSize);
                 mesh.SetColors(meshData.nativeColors, 0, verticesSize);
                 mesh.SetUVs(0, meshData.nativeUVs, 0, verticesSize);
-                mesh.SetIndices(meshData.nativeIndices.AsArray(), MeshTopology.Triangles, 0);
+                mesh.SetIndices(meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
+                mesh.SetIndices(meshData.nativeLiquidIndices.AsArray(), MeshTopology.Triangles, 1);
+                mesh.SetIndices(meshData.nativeFoliageIndices.AsArray(), MeshTopology.Triangles, 2);
+                mesh.SetIndices(meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 3);
+                colmesh.subMeshCount = 2;
                 colmesh.SetVertices(meshData.nativeVertices, 0, verticesSize);
-                colmesh.SetIndices(meshData.nativeIndices.AsArray(), MeshTopology.Triangles, 0);
-                mesh.SetIndices(meshData.nativeSubIndices.AsArray(), MeshTopology.Triangles, 1);
-                mesh.SetIndices(meshData.nativeMorIndices.AsArray(), MeshTopology.Triangles, 2);
-
+                colmesh.SetIndices(meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
+                colmesh.SetIndices(meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 1);
+                
                 mesh.RecalculateNormals();
                 mesh.RecalculateBounds();
 

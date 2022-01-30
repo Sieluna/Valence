@@ -62,7 +62,7 @@ namespace Environment.System
             }
         }
 
-        [BurstCompile]
+        [BurstCompile(DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
         public struct BakeJob : IJobParallelFor
         {
             public NativeArray<int> meshIds;

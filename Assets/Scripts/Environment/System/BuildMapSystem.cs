@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace Environment.System
 {
-    [BurstCompile]
+    [BurstCompile(DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
     public struct BuildMapSystem : IJobParallelFor
     {
         [ReadOnly] public int3 chunkPosition;

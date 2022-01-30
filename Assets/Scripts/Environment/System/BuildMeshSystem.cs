@@ -9,7 +9,7 @@ using Utilities;
 
 namespace Environment.System
 {
-    [BurstCompile]
+    [BurstCompile(DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
     public struct BuildMeshSystem : IJob
     {
         [ReadOnly] public NativeArray<Block> blocks;
@@ -17,14 +17,16 @@ namespace Environment.System
         [ReadOnly] public int3 chunkSize;
         [ReadOnly] public NativeArray<BlockLight> lightData;
     
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeArray<float3> vertices;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeArray<float3> normals;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeArray<float4> uvs;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeArray<Color> colors;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeList<int> indices;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeList<int> subIndices;
-        [WriteOnly] [NativeDisableParallelForRestriction] public NativeList<int> morIndices;
-    
+        [WriteOnly] public NativeArray<float3> vertices;
+        [WriteOnly] public NativeArray<float3> normals;
+        [WriteOnly] public NativeArray<float4> uvs;
+        [WriteOnly] public NativeArray<Color> colors;
+        
+        [WriteOnly] public NativeList<int> blockIndices;
+        [WriteOnly] public NativeList<int> liquidIndices;
+        [WriteOnly] public NativeList<int> foliageIndices;
+        [WriteOnly] public NativeList<int> transparentIndices;
+
         [WriteOnly] public NativeCounter counter;
     
         private struct Empty { }
@@ -67,20 +69,22 @@ namespace Environment.System
                             if (hashMap.ContainsKey(gridPosition)) { y++; continue; }
     
                             int3 neighborPosition = gridPosition + Shared.CubeDirectionOffsets[direction];
-    
-                            if (TransparencyCheck(blocks, blockData, neighborPosition, chunkSize)) { y++; continue; }
+                            var neighborBlock = blocks[neighborPosition.To1DIndex(chunkSize)].type;
+                            var neighborShape = blockData[(byte) neighborBlock].GetBlockShape();
+                            
+                            if (TransparencyCheck(neighborShape, neighborPosition, chunkSize)) { y++; continue; }
     
                             if (shape == (long) BlockShape.Liquid)
                             {
                                 if (direction != 2) { y++; continue; }
-                                if (blocks[neighborPosition.To1DIndex(chunkSize)].type == BlockType.Water) { y++; continue; }
+                                if (neighborBlock == BlockType.Water) { y++; continue; }
                             }
     
                             if (shape == (long) BlockShape.Foliage)
                             {
                                 if (direction != 2) { y++; continue; }
                             }
-    
+
                             #endregion
     
                             #region Step2: Get the calculated light data
@@ -95,25 +99,25 @@ namespace Environment.System
                             #region Step3: Mesh combine in xy direction
     
                             int height = 1, width = 1;
-                            if (shape != UnsafeUtility.EnumToInt(BlockShape.Leaves))
+                            if (shape != (long) BlockShape.Transparent && shape != (long) BlockShape.Foliage)
                             {
                                 for (height = 1; height + y < chunkSize[Shared.DirectionAlignedY[direction]]; height++)
                                 {
                                     int3 nextPosition = gridPosition;
                                     nextPosition[Shared.DirectionAlignedY[direction]] += height;
-    
+
                                     var nextBlock = blocks[nextPosition.To1DIndex(chunkSize)];
                                     var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
-                                    
+  
                                     if (nextBlock.type != block.type) break;
                                     if (!nextLight.CompareFace(light, direction)) break;
                                     if (hashMap.ContainsKey(nextPosition)) break;
-    
+
                                     hashMap.TryAdd(nextPosition, new Empty());
                                 }
-                                
+
                                 bool isDone = false;
-                                
+
                                 for (width = 1; width + x < chunkSize[Shared.DirectionAlignedX[direction]]; width++)
                                 {
                                     for (int dy = 0; dy < height; dy++)
@@ -121,19 +125,19 @@ namespace Environment.System
                                         int3 nextPosition = gridPosition;
                                         nextPosition[Shared.DirectionAlignedX[direction]] += width;
                                         nextPosition[Shared.DirectionAlignedY[direction]] += dy;
-    
+
                                         var nextBlock = blocks[nextPosition.To1DIndex(chunkSize)];
                                         var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
-    
+                                        
                                         if (nextBlock.type != block.type || hashMap.ContainsKey(nextPosition) || !nextLight.CompareFace(light, direction))
                                         {
                                             isDone = true;
                                             break;
                                         }
                                     }
-    
+
                                     if (isDone) break;
-    
+
                                     for (int dy = 0; dy < height; dy++)
                                     {
                                         int3 nextPosition = gridPosition;
@@ -143,28 +147,28 @@ namespace Environment.System
                                     }
                                 }
                             }
-    
+
                             #endregion
-    
+                            
                             switch (shape)
                             {
                                 case (long) BlockShape.Liquid:
                                     AddQuad(width, height, gridPosition, counter.Increment(),
-                                        ref vertices, ref normals, ref uvs, ref colors, ref subIndices);
+                                        ref vertices, ref normals, ref uvs, ref colors, ref liquidIndices);
                                     break;
                                 case (long) BlockShape.Foliage:
                                     AddCrossShape(gridPosition, counter.Increment(2), 1,
-                                        ref vertices, ref normals, ref uvs, ref colors, ref morIndices);
+                                        ref vertices, ref normals, ref uvs, ref colors, ref foliageIndices);
                                     break;
                                 case (long) BlockShape.Block:
                                     AddQuadByDirection(direction, blockData, block.type, light,
                                         width, height, gridPosition, counter.Increment(),
-                                        ref vertices, ref normals, ref uvs, ref colors, ref indices);
+                                        ref vertices, ref normals, ref uvs, ref colors, ref blockIndices);
                                     break;
-                                case (long) BlockShape.Leaves:
+                                case (long) BlockShape.Transparent:
                                     AddQuadByDirection(direction, blockData, block.type, light,
                                         width, height, gridPosition, counter.Increment(),
-                                        ref vertices, ref normals, ref uvs, ref colors, ref indices);
+                                        ref vertices, ref normals, ref uvs, ref colors, ref transparentIndices);
                                     break;
                             }
                             
@@ -179,11 +183,10 @@ namespace Environment.System
         
         #region Private Function (move outside?)
 
-        private static bool TransparencyCheck(in NativeArray<Block> blocks, in NativeArray<long> blockData, int3 position, int3 chunkSize)
+        private static bool TransparencyCheck(long neighborShape, int3 position, int3 chunkSize)
         {
             if (!position.BoundaryCheck(chunkSize)) return false;
-            var neighborBlock = blockData[(byte) blocks[position.To1DIndex(chunkSize)].type].GetBlockShape();
-            return neighborBlock is not ((long) BlockShape.Empty or (long) BlockShape.Foliage or (long) BlockShape.Liquid);
+            return neighborShape is not ((long) BlockShape.Empty or (long) BlockShape.Foliage or (long) BlockShape.Transparent or (long) BlockShape.Liquid);
         }
     
         private static void AddCrossShape(int3 gridPosition, int numFace, int rand, 
@@ -220,7 +223,7 @@ namespace Environment.System
             }
     
             for (int i = 0, iMax = Shared.CubeCrossIndices.Length; i < iMax; i++)
-                indices.AddNoResize(numVertices + Shared.CubeCrossIndices[i]);
+                indices.Add(numVertices + Shared.CubeCrossIndices[i]);
         }
     
         private static void AddQuad(float width, float height, int3 gridPosition, int numFace,
@@ -244,7 +247,7 @@ namespace Environment.System
             }
     
             for (int i = 0; i < 6; i++)
-                indices.AddNoResize(Shared.CubeFlippedIndices[12 + i] + numVertices);
+                indices.Add(Shared.CubeFlippedIndices[12 + i] + numVertices);
         }
     
         private static unsafe void AddQuadByDirection(int direction, in NativeArray<long> blockData, BlockType type, in BlockLight blockLight,

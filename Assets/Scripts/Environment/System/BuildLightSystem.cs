@@ -7,7 +7,7 @@ using Unity.Mathematics;
 
 namespace Environment.System
 {
-    [BurstCompile]
+    [BurstCompile(DisableSafetyChecks = true, OptimizeFor = OptimizeFor.Performance)]
     public struct BuildLightSystem : IJobParallelFor
     {
         [ReadOnly] public NativeArray<long> blockData;
@@ -66,9 +66,9 @@ namespace Environment.System
 
                 for (int i = 0; i < 4; i++)
                 {
-                    bool side1 = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3]]);
-                    bool corner = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3 + 1]]);
-                    bool side2 = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3 + 2]]);
+                    var side1 = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3]], chunkSize, chunkPosition, ref neighborHashMap, ref blocksWithNeighbor);
+                    var corner = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3 + 1]], chunkSize, chunkPosition, ref neighborHashMap, ref blocksWithNeighbor);
+                    var side2 = TransparencyCheck(blocks, blockData, neighbors[Shared.AONeighborOffsets[i * 3 + 2]], chunkSize, chunkPosition, ref neighborHashMap, ref blocksWithNeighbor);
 
                     if (side1 && side2)
                         blockLight.ambient[i + direction * 4] = 0f;
@@ -80,7 +80,10 @@ namespace Environment.System
             lightDatas[index] = blockLight;
         }
 
-        private bool TransparencyCheck(in NativeSlice<Block> blocks, in NativeArray<long> blockData, int3 gridPosition)
+        
+        private static bool TransparencyCheck(in NativeSlice<Block> blocks, in NativeArray<long> blockData,
+            int3 gridPosition, int3 chunkSize, int3 chunkPosition,
+            ref NativeHashMap<int3, int> neighborHashMap, ref NativeArray<Block> blocksWithNeighbor)
         {
             if (gridPosition.BoundaryCheck(chunkSize))
             {

@@ -477,6 +477,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5167570986bf5cd44869cbfe02ccd31f, type: 2}
   - {fileID: 2100000, guid: 662d3143085c8844faff67675a9d8e1e, type: 2}
   - {fileID: 2100000, guid: 8f5747920c17ccb43ab444373b21066f, type: 2}
+  - {fileID: 2100000, guid: 5167570986bf5cd44869cbfe02ccd31f, type: 2}
   maxGenerateChunksInFrame: 1
 --- !u!1 &934507233
 GameObject:
