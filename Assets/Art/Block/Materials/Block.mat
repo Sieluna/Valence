@@ -23,7 +23,7 @@ Material:
   m_Name: Block
   m_Shader: {fileID: -6465566751694194690, guid: f447b60e0b8905149b047aa6adb7b61e,
     type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _USECOLORMASK
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0

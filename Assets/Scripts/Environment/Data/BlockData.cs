@@ -33,7 +33,7 @@ namespace Environment.Data
                 m_NativeBlockData[(byte) prefab.block] = data;
             });
         }
-
+        
         private void OnDestroy() => m_NativeBlockData.Dispose();
     }
     

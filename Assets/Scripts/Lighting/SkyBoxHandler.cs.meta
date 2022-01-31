@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: a30576c4ddcdbdb40af453187d53329c
+timeCreated: 1493888263
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Azure_SunDirectionalLight: {instanceID: 0}
+  - Azure_MoonDirectionalLight: {instanceID: 0}
+  - Azure_Skydome: {instanceID: 0}
+  - Azure_SkyMaterial: {instanceID: 0}
+  - Azure_StarfieldTexture: {fileID: 8900000, guid: e4ed496f604966045a3173295a8b5598,
+      type: 3}
+  - Azure_MoonTexture: {fileID: 2800000, guid: 6af07e75b47b77a458ca453209c729b5, type: 3}
+  - Azure_StaticCloudTexture: {fileID: 2800000, guid: 73c8462dd3ad93d4797a72d6cff5ea0f,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -58,9 +58,7 @@ namespace Environment.Data
                     {
                         int3 neighborChunkPosition = new int3(x, y, z);
                         if (nativeNeighborHashMap[neighborChunkPosition] != -1)
-                        {
                             NativeArray<Block>.Copy(neighborBlocks[blockIndex], 0, nativeBlocksWithNeighbor, nativeNeighborHashMap[neighborChunkPosition] * numVoxels, numVoxels);
-                        }
                         blockIndex += 1;
                     }
 
