@@ -17,8 +17,7 @@ namespace Environment
         [SerializeField] private int maxGenerateChunksInFrame = 1;
 
         private class ChunkNode : PriorityQueueNode { public int3 chunkPosition; }
-
-        private NativeArray<long> blockData;
+        
         private Dictionary<int3, Chunk> chunks = new();
         private int3 lastTargetChunkPosition = int.MinValue;
         private PriorityQueue<ChunkNode> generateChunkQueue = new(100000);
@@ -82,7 +81,6 @@ namespace Environment
 
         private void LateUpdate()
         {
-            // TODO: Process generate ChunkQueue
             int numChunks = 0;
             while (generateChunkQueue.Count != 0)
             {
@@ -94,7 +92,7 @@ namespace Environment
                 numChunks++;
             }
         }
-        
+
         private Chunk GenerateChunk(int3 chunkPosition)
         {
             if (chunks.ContainsKey(chunkPosition)) return chunks[chunkPosition];

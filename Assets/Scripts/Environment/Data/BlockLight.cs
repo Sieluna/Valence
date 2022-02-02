@@ -1,6 +1,10 @@
 // ReSharper disable CompareOfFloatsByEqualityOperator
+
+using Unity.Collections;
+
 namespace Environment.Data
 {
+    [BurstCompatible]
     public unsafe struct BlockLight
     {
         public fixed float ambient[24];

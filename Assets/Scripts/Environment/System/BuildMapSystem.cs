@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -147,6 +148,7 @@ namespace Environment.System
             blocks[index] = block;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalcPixel2DFractal(float x, float y, float frequency, int octaves, float amplitude = 1.0f, float lacunarity = 2.0f, float persistence = 0.5f)
         {
             float output = 0.0f, denom = 0.0f;
@@ -162,6 +164,7 @@ namespace Environment.System
             return output / denom;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalcPixel2D(float x, float y, float scale) => (noise.snoise(new float2(x * scale, y * scale)) + 1) * 0.5f;
     }
 }

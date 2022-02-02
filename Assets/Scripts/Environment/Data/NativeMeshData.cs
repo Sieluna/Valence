@@ -16,7 +16,6 @@ namespace Environment.Data
         public NativeList<int> nativeBlockIndices;
         public NativeList<int> nativeLiquidIndices;
         public NativeList<int> nativeFoliageIndices;
-        public NativeList<int> nativeLeavesIndices;
         public NativeList<int> nativeTransparentIndices;
         public NativeArray<float4> nativeUVs;
         public NativeArray<Color> nativeColors;
@@ -36,7 +35,7 @@ namespace Environment.Data
             nativeBlockIndices = new NativeList<int>(18 * numBlocks, Allocator.TempJob);
             nativeLiquidIndices = new NativeList<int>(numLayer, Allocator.TempJob);
             nativeFoliageIndices = new NativeList<int>(numLayer, Allocator.TempJob);
-            nativeTransparentIndices = new NativeList<int>(18 * numBlocks, Allocator.TempJob);
+            nativeTransparentIndices = new NativeList<int>(numLayer, Allocator.TempJob);
             counter = new NativeCounter(Allocator.TempJob);
         }
 
@@ -59,15 +58,15 @@ namespace Environment.Data
             if (counter.IsCreated) counter.Dispose();
         }
 
-        public IEnumerator ScheduleMeshingJob(Block[] blocks, NativeLightData lightData, int3 chunkSize, bool argent = false)
+        public IEnumerator Generate(Block[] blocks, NativeLightData lightData, int3 chunkSize, bool argent = false)
         {
             nativeBlocks.CopyFrom(blocks);
             
             jobHandle = new BuildMeshSystem
             {
                 blocks = nativeBlocks,
-                blockData = BlockData.Instance.Data,
                 chunkSize = chunkSize,
+                lightData = lightData.nativeLightData,
                 vertices = nativeVertices,
                 normals = nativeNormals,
                 uvs = nativeUVs,
@@ -76,10 +75,8 @@ namespace Environment.Data
                 liquidIndices = nativeLiquidIndices,
                 foliageIndices = nativeFoliageIndices,
                 transparentIndices = nativeTransparentIndices,
-                lightData = lightData.nativeLightData,
                 counter = counter
             }.Schedule();
-            JobHandle.ScheduleBatchedJobs();
 
             int frameCount = lightData.frameCount;
             yield return new WaitUntil(() =>

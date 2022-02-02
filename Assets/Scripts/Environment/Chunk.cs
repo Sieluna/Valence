@@ -94,11 +94,11 @@ namespace Environment
             
             lightData?.Dispose();
             lightData = new NativeLightData(chunkSize);
-            yield return lightData.ScheduleLightingJob(neighborBlocks, chunkPosition, chunkSize, 1, argent);
+            yield return lightData.Generate(neighborBlocks, chunkPosition, chunkSize, 1, argent);
 
             meshData?.Dispose();
             meshData = new NativeMeshData(chunkSize);
-            yield return meshData.ScheduleMeshingJob(blocks, lightData, chunkSize, argent);
+            yield return meshData.Generate(blocks, lightData, chunkSize, argent);
 
             meshData.GetMeshInformation(out int verticesSize);
 

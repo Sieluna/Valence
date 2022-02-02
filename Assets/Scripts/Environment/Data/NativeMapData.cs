@@ -34,8 +34,7 @@ namespace Environment.Data
                 chunkSize = chunkSize,
                 blocks = nativeBlocks,
             }.Schedule(nativeBlocks.Length, 32);
-            JobHandle.ScheduleBatchedJobs();
-                
+
             int frameCount = 1;
             yield return new WaitUntil(() =>
             {

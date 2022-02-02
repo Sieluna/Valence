@@ -23,7 +23,7 @@ namespace Environment.Data
             jobHandle.Complete(); Dispose();
         }
 
-        public IEnumerator ScheduleLightingJob(List<Block[]> neighborBlocks, int3 chunkPosition, int3 chunkSize, int numNeighbor, bool argent = false)
+        public IEnumerator Generate(List<Block[]> neighborBlocks, int3 chunkPosition, int3 chunkSize, int numNeighbor, bool argent = false)
         {
             nativeNeighborHashMap = new NativeHashMap<int3, int>(neighborBlocks.Count, Allocator.TempJob);
 
@@ -64,15 +64,12 @@ namespace Environment.Data
 
             jobHandle = new BuildLightSystem
             {
-                blockData = BlockData.Instance.Data,
                 blocksWithNeighbor = nativeBlocksWithNeighbor,
                 neighborHashMap = nativeNeighborHashMap,
                 chunkPosition = chunkPosition,
                 chunkSize = chunkSize,
                 lightDatas = nativeLightData
             }.Schedule(nativeLightData.Length, 32);
-            
-            JobHandle.ScheduleBatchedJobs();
 
             frameCount = 0;
             yield return new WaitUntil(() =>

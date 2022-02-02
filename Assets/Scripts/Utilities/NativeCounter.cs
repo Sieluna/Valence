@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
@@ -70,6 +71,41 @@ namespace Utilities
 
             UnsafeUtility.Free(m_Counter, m_AllocatorLabel);
             m_Counter = null;
+        }
+        
+        [NativeContainer]
+        [NativeContainerIsAtomicWriteOnly]
+        public unsafe struct Concurrent
+        {
+            [NativeDisableUnsafePtrRestriction] private int* m_Counter;
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle m_Safety;
+#endif
+            
+            public static implicit operator NativeCounter.Concurrent (NativeCounter cnt)
+            {
+                NativeCounter.Concurrent concurrent;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                AtomicSafetyHandle.CheckWriteAndThrow(cnt.m_Safety);
+                concurrent.m_Safety = cnt.m_Safety;
+                AtomicSafetyHandle.UseSecondaryVersion(ref concurrent.m_Safety);
+#endif
+
+                concurrent.m_Counter = cnt.m_Counter;
+                return concurrent;
+            }
+
+            public int Increment(int number = 1)
+            {
+                // Increment still needs to check for write permissions
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+                // The actual increment is implemented with an atomic, since it can be incremented by multiple threads at the same time
+                Interlocked.Add(ref *m_Counter, number);
+                return *m_Counter - number;
+            }
         }
     }
 }
