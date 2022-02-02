@@ -126,7 +126,7 @@ namespace Environment
                 if (argent)
                     SetSharedMesh(colmesh);
                 else
-                    BuildColliderSystem.Instance.Enqueue(this, colmesh);
+                    NativeColliderData.Instance.Enqueue(this, colmesh);
             }
 
             lightData.Dispose();

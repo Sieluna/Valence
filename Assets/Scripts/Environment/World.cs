@@ -33,6 +33,7 @@ namespace Environment
 
         private void Awake()
         {
+            new SharedData().Generate();
             Shader.SetGlobalInt(AtlasX, Shared.AtlasSize.x);
             Shader.SetGlobalInt(AtlasY, Shared.AtlasSize.y);
             Shader.SetGlobalVector(AtlasRec, new Vector4(1.0f / Shared.AtlasSize.x, 1.0f / Shared.AtlasSize.y));
