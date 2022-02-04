@@ -9,8 +9,8 @@ namespace Environment
     public class SkyboxPrefabViewer : Editor
     {
         private SkyboxPrefab m_Prefab;
-        
-        private Vector3 m_starFieldColor = Vector3.one;
+
+        private Vector3 m_starFieldColor = Vector3.one; 
         private Vector3 m_starFieldPosition = Vector3.zero;
         
         private void OnEnable() => m_Prefab = target as SkyboxPrefab;
@@ -23,12 +23,7 @@ namespace Environment
             // Time of day
             EditorGUILayout.LabelField("Time Of Day", EditorStyles.boldLabel);
             EditorGUILayout.Space(2);
-            
-            EditorGUILayout.Slider(serializedObject.FindProperty("latitude"), -120f, 120f, "Latitude");
-            EditorGUILayout.Slider(serializedObject.FindProperty("longitude"), -180f, 180f, "Longitude");
-            EditorGUILayout.Slider(serializedObject.FindProperty("utc"), -12f, 12f, "Utc");
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("dayCycleInMinutes"), new GUIContent("Day Cycle in Minutes"));
-            
+
             EditorGUILayout.BeginVertical("Box");
             GUILayout.Space(-5);
             EditorGUILayout.BeginHorizontal();
@@ -62,12 +57,12 @@ namespace Environment
             
             EditorGUILayout.CurveField(serializedObject.FindProperty("rayleighCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 5.0f), new GUIContent("Rayleigh"));
             EditorGUILayout.CurveField(serializedObject.FindProperty("mieCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 30.0f), new GUIContent("Mie"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("krCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 5.0f), new GUIContent("Kr"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("kmCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 30.0f), new GUIContent("Km"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("scatteringCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 5.0f), new GUIContent("Scattering"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("sunIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 30.0f), new GUIContent("Sun Intensity"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("krCurve"), Color.green, new Rect(0.0f, 1.0f, 24.0f, 29.0f), new GUIContent("Kr"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("kmCurve"), Color.green, new Rect(0.0f, 1.0f, 24.0f, 29.0f), new GUIContent("Km"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("scatteringCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 75.0f), new GUIContent("Scattering"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("sunIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 5.0f), new GUIContent("Sun Intensity"));
             EditorGUILayout.CurveField(serializedObject.FindProperty("nightIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 5.0f), new GUIContent("Night Intensity"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("exposureCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 30.0f), new GUIContent("Exposure"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("exposureCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 8.0f), new GUIContent("Exposure"));
             
             EditorGUILayout.PropertyField(serializedObject.FindProperty("rayleighGradientColor"), new GUIContent("Rayleigh Color"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("mieGradientColor"), new GUIContent("Mie Color"));
@@ -81,7 +76,7 @@ namespace Environment
             EditorGUILayout.PropertyField(serializedObject.FindProperty("moonBrightGradientColor"), new GUIContent("Moon Bright Color"));
             
             EditorGUILayout.CurveField(serializedObject.FindProperty("moonBrightRangeCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 1.0f), new GUIContent("Moon Bright Range"));
-            EditorGUILayout.CurveField(serializedObject.FindProperty("starfieldIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 1.0f), new GUIContent("Starfield Intensity"));
+            EditorGUILayout.CurveField(serializedObject.FindProperty("starfieldIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 10.0f), new GUIContent("Starfield Intensity"));
             EditorGUILayout.CurveField(serializedObject.FindProperty("milkyWayIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 1.0f), new GUIContent("Milky Way Intensity"));
 
             m_starFieldColor.x = EditorGUILayout.Slider("Starfield Color R", m_Prefab.starfieldColorBalance.x, 1.0f, 2.0f);
@@ -137,6 +132,14 @@ namespace Environment
             EditorGUILayout.Slider(serializedObject.FindProperty("moonDiskSize"), 0.0f, 1.0f, "Moon Disk Size");
             EditorGUILayout.PropertyField(serializedObject.FindProperty("cloudMode"), new GUIContent("Cloud Mode"));
 
+            // Events
+            EditorGUILayout.Space(2);
+            EditorGUILayout.LabelField("Events", EditorStyles.boldLabel);
+            EditorGUILayout.Space(2);
+            
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("onSunRise"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("onSunSet"));
+
             // End custom Inspector
             if (EditorGUI.EndChangeCheck())
             {
@@ -144,8 +147,7 @@ namespace Environment
                 serializedObject.ApplyModifiedProperties();
                 m_Prefab.starfieldColorBalance = m_starFieldColor;
                 m_Prefab.starfieldPosition = m_starFieldPosition;
-                RenderSettings.skybox = m_Prefab.skyMaterial;
-                m_Prefab.skyMaterial.shader = Shader.Find(m_Prefab.cloudMode == CloudMode.Off ? "Skybox/PixelSky" : "Skybox/PixelCloud");
+                m_Prefab.UpdateSkySettings();
             }
             
         }

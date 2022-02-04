@@ -1,6 +1,8 @@
+using System;
 using Environment.System;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 using Utilities;
 
 namespace Environment.Data
@@ -20,11 +22,17 @@ namespace Environment.Data
         public static readonly SharedStatic<FixedArray<int>> CubeFlippedIndices = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, CFI>(); private class CFI {}
         public static readonly SharedStatic<FixedArray<int>> CubeCrossIndices = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, CCI>(); private class CCI {}
         public static readonly SharedStatic<FixedArray<int>> AONeighborOffsets = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, AO>(); private class AO {}
-
-        public void Generate()
+        
+        
+        public SharedData()
         {
-            var system = new BuildSharedSystem();
-            system.InitSharedStatic("Blocks");
+            system = new BuildSharedSystem();
         }
+
+        private BuildSharedSystem system;
+        
+        public void Generate() => system.Init();
+
+        public void Update() => system.Refresh();
     }
 }

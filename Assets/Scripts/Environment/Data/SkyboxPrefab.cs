@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Environment.Data
 {
@@ -7,10 +8,6 @@ namespace Environment.Data
     [CreateAssetMenu(fileName = "New Skybox", menuName = "Skybox Prefab")]
     public class SkyboxPrefab : ScriptableObject
     {
-        public float latitude = 0.0f;
-        public float longitude = 0.0f;
-        public float utc = 0.0f;
-        public float dayCycleInMinutes = 30.0f;
         public bool setTimeByCurve = false;
         public AnimationCurve dayLengthCurve = AnimationCurve.Linear(0.0f, 0.0f, 24.0f, 24.0f);
 
@@ -69,5 +66,15 @@ namespace Environment.Data
         public float moonDiskSize = 0.5f;
         
         public CloudMode cloudMode = CloudMode.Static;
+        
+        // Event
+        public UnityEvent onSunRise;
+        public UnityEvent onSunSet;
+
+        public void UpdateSkySettings()
+        {
+            RenderSettings.skybox = skyMaterial;
+            skyMaterial.shader = Shader.Find(cloudMode == CloudMode.Off ? "Skybox/PixelSky" : "Skybox/PixelCloud");
+        }
     }
 }

@@ -16,10 +16,13 @@ namespace Environment
         [SerializeField] private Material[] chunkMaterial;
         [SerializeField] private int maxGenerateChunksInFrame = 1;
 
+        public SkyboxPrefab skybox;
+        public TimePrefab time;
+
         private class ChunkNode : PriorityQueueNode { public int3 chunkPosition; }
         
         private Dictionary<int3, Chunk> chunks = new();
-        private int3 lastTargetChunkPosition = int.MinValue;
+        private int3 m_LastTargetChunkPosition = int.MinValue;
         private PriorityQueue<ChunkNode> generateChunkQueue = new(100000);
 
         private static readonly int AtlasX = Shader.PropertyToID("_AtlasX");
@@ -29,11 +32,14 @@ namespace Environment
         /// <summary> Number to control <see cref="CanUpdate"/> [Flag] in order to handle chunk update </summary>
         public int UpdatingChunks { get; set; }
 
+        public SharedData sharedData;
+        
         public bool CanUpdate => UpdatingChunks <= maxGenerateChunksInFrame; // Limit the update rate
 
         private void Awake()
         {
-            new SharedData().Generate();
+            sharedData = new SharedData();
+            sharedData.Generate();
             Shader.SetGlobalInt(AtlasX, Shared.AtlasSize.x);
             Shader.SetGlobalInt(AtlasY, Shared.AtlasSize.y);
             Shader.SetGlobalVector(AtlasRec, new Vector4(1.0f / Shared.AtlasSize.x, 1.0f / Shared.AtlasSize.y));
@@ -41,11 +47,13 @@ namespace Environment
         
         private void Update()
         {
+            sharedData.Update();
+            
             if (target == null) return; // safety check
 
             var targetPosition = target.position.ToChunk(chunkSize);
 
-            if (lastTargetChunkPosition.Equals(targetPosition)) return;
+            if (m_LastTargetChunkPosition.Equals(targetPosition)) return;
 
             // Make sure its not out of range;
             foreach (var chunkNode in generateChunkQueue)
@@ -77,7 +85,7 @@ namespace Environment
                     generateChunkQueue.Enqueue(newNode, math.lengthsq(deltaPosition)); // 往Queue添加Node
                 }
             
-            lastTargetChunkPosition = targetPosition;
+            m_LastTargetChunkPosition = targetPosition;
         }
 
         private void LateUpdate()
@@ -147,10 +155,8 @@ namespace Environment
 
         public bool IsAir(Vector3 worldPosition)
         {
-            if (GetBlock(worldPosition, out Block voxel))
-            {
-                return voxel.type == BlockType.Air;
-            }
+            if (GetBlock(worldPosition, out Block block))
+                return block.type == BlockType.Air;
 
             return false;
         }

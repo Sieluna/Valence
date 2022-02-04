@@ -79,8 +79,7 @@ namespace Environment.System
 
             lightDatas[index] = blockLight;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         private static bool TransparencyCheck(in NativeSlice<Block> blocks,
             int3 gridPosition, int3 chunkSize, int3 chunkPosition,
             ref NativeHashMap<int3, int> neighborHashMap, ref NativeArray<Block> blocksWithNeighbor)
