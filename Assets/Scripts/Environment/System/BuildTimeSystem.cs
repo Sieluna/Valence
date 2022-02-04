@@ -1,11 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
 using Environment.Data;
+using Environment.Interface;
 using UnityEngine;
 
 namespace Environment.System
 {
-    public class BuildTimeSystem
+    public class BuildTimeSystem : ISharedSystem
     {
         private TimePrefab m_Data;
         private float m_TimeProgression = 0f;

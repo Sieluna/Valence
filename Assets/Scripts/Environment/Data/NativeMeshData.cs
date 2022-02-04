@@ -62,23 +62,7 @@ namespace Environment.Data
         {
             nativeBlocks.CopyFrom(blocks);
             
-            //jobHandle = new BuildMeshSystem
-            //{
-            //    blocks = nativeBlocks,
-            //    chunkSize = chunkSize,
-            //    lightData = lightData.nativeLightData,
-            //    vertices = nativeVertices,
-            //    normals = nativeNormals,
-            //    uvs = nativeUVs,
-            //    colors = nativeColors,
-            //    blockIndices = nativeBlockIndices,
-            //    liquidIndices = nativeLiquidIndices,
-            //    foliageIndices = nativeFoliageIndices,
-            //    transparentIndices = nativeTransparentIndices,
-            //    counter = counter
-            //}.Schedule();
-
-            new BuildMeshSystem
+            jobHandle = new BuildMeshSystem
             {
                 blocks = nativeBlocks,
                 chunkSize = chunkSize,
@@ -92,17 +76,16 @@ namespace Environment.Data
                 foliageIndices = nativeFoliageIndices,
                 transparentIndices = nativeTransparentIndices,
                 counter = counter
-            }.Run();
-            
+            }.Schedule();
+
             int frameCount = lightData.frameCount;
             yield return new WaitUntil(() =>
             {
                 frameCount++;
-                return frameCount >= 4 || argent;
-                // return jobHandle.IsCompleted || frameCount >= 4 || argent;
+                return jobHandle.IsCompleted || frameCount >= 4 || argent;
             });
 
-            //jobHandle.Complete();
+            jobHandle.Complete();
         }
 
         public void GetMeshInformation(out int verticesSize) => verticesSize = counter.Count * 4;

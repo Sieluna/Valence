@@ -61,5 +61,7 @@ namespace Environment.Data
         internal static readonly int MoonMatrix = Shader.PropertyToID("_MoonMatrix");
         internal static readonly int StarfieldMatrix = Shader.PropertyToID("_StarfieldMatrix");
 
+        internal static readonly int GlobalAmbientIntensity = Shader.PropertyToID("_GlobalAmbientIntensity");
+
     }
 }

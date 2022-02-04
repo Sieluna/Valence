@@ -1,12 +1,11 @@
-using System;
 using Environment.Data;
+using Environment.Interface;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Rendering;
 
 namespace Environment.System
 {
-    public class BuildSkyboxSystem
+    public class BuildSkyboxSystem : ISharedSystem
     {
         private SkyboxPrefab m_Data;
         private TimePrefab m_Time;
@@ -85,7 +84,7 @@ namespace Environment.System
             Shader.SetGlobalFloat(ShaderIDs.CloudPower, m_Data.cloudPowerCurve.Evaluate(m_curveTime));
             Shader.SetGlobalFloat(ShaderIDs.CloudIntensity, m_Data.cloudIntensityCurve.Evaluate(m_curveTime));
             var cloudRotationSpeed = 0f;
-            if (Application.isPlaying && m_Data.cloudRotationSpeed != 0.0f)
+            if (m_Data.cloudRotationSpeed != 0.0f)
             {
                 cloudRotationSpeed += m_Data.cloudRotationSpeed * Time.deltaTime;
                 if (cloudRotationSpeed >= 1.0f) cloudRotationSpeed -= 1.0f;
@@ -132,6 +131,7 @@ namespace Environment.System
             m_SunFlareComponent.intensity = m_Data.flareIntensityCurve.Evaluate(m_curveTime);
             m_lightComponent.color = m_Data.lightGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientIntensity = m_Data.ambientIntensityCurve.Evaluate(m_curveTime);
+            Shader.SetGlobalFloat(ShaderIDs.GlobalAmbientIntensity, m_Data.ambientIntensityCurve.Evaluate(m_curveTime));
             RenderSettings.ambientSkyColor = m_Data.ambientSkyGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientEquatorColor = m_Data.equatorSkyGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientGroundColor = m_Data.groundSkyGradientColor.Evaluate(m_gradientTime);

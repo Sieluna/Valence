@@ -27,8 +27,7 @@ namespace Environment.Data
         {
             nativeNeighborHashMap = new NativeHashMap<int3, int>(neighborBlocks.Count, Allocator.TempJob);
 
-            int blockIndex = 0;
-            int numNeighbors = 0;
+            int blockIndex = 0, numNeighbors = 0;
             for (int x = chunkPosition.x - numNeighbor, xMax = chunkPosition.x + numNeighbor; x <= xMax; x++)
                 for (int y = chunkPosition.y - numNeighbor, yMax = chunkPosition.y + numNeighbor; y <= yMax; y++)
                     for (int z = chunkPosition.z - numNeighbor, zMax = chunkPosition.z + numNeighbor; z <= zMax; z++)

@@ -1,14 +1,12 @@
 using System;
 using Environment.Data;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
+using Environment.Interface;
 using Unity.Mathematics;
-using UnityEngine;
 using Utilities;
 
 namespace Environment.System
 {
-    public class BuildSharedSystem
+    public class BuildSharedSystem : ISharedSystem
     {
         public BuildSharedSystem()
         {
@@ -49,22 +47,16 @@ namespace Environment.System
             SharedData.AONeighborOffsets.Data = new FixedArray<int>(12);
             SharedData.AONeighborOffsets.Data.CopyFrom(0, 1, 2, 6, 7, 0, 2, 3, 4, 4, 5, 6);
         }
-        
-        private BuildTimeSystem timeSys;
-        private BuildSkyboxSystem skyboxSys;
-        public void Init()
-        {
-            new BuildBlockSystem("Blocks").Init();
-            timeSys = new BuildTimeSystem(World.Instance.time);
-            timeSys.Init();
-            skyboxSys = new BuildSkyboxSystem(World.Instance.skybox, World.Instance.time);
-            skyboxSys.Init();
-        }
 
-        public void Refresh()
+        private readonly ISharedSystem[] m_Systems = 
         {
-            timeSys.Refresh();
-            skyboxSys.Refresh();
-        }
+            new BuildBlockSystem("Blocks"),
+            new BuildTimeSystem(World.Instance.time),
+            new BuildSkyboxSystem(World.Instance.skybox, World.Instance.time)
+        };
+
+        public void Init() => Array.ForEach(m_Systems, system => system.Init());
+
+        public void Refresh() => Array.ForEach(m_Systems, system => system.Refresh());
     }
 }

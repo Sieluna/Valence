@@ -1,12 +1,13 @@
 using System;
 using Environment.Data;
+using Environment.Interface;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using Utilities;
 
 namespace Environment.System
 {
-    public class BuildBlockSystem
+    public class BuildBlockSystem : ISharedSystem
     {
         private string m_BlockPath;
         

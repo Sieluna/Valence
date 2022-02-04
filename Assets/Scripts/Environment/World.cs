@@ -24,16 +24,14 @@ namespace Environment
         private Dictionary<int3, Chunk> chunks = new();
         private int3 m_LastTargetChunkPosition = int.MinValue;
         private PriorityQueue<ChunkNode> generateChunkQueue = new(100000);
-
+        private SharedData sharedData;
+        
         private static readonly int AtlasX = Shader.PropertyToID("_AtlasX");
         private static readonly int AtlasY = Shader.PropertyToID("_AtlasY");
         private static readonly int AtlasRec = Shader.PropertyToID("_AtlasRec");
-
-        /// <summary> Number to control <see cref="CanUpdate"/> [Flag] in order to handle chunk update </summary>
+        
         public int UpdatingChunks { get; set; }
 
-        public SharedData sharedData;
-        
         public bool CanUpdate => UpdatingChunks <= maxGenerateChunksInFrame; // Limit the update rate
 
         private void Awake()

@@ -1,4 +1,3 @@
-using System;
 using Environment.Data;
 using UnityEditor;
 using UnityEngine;
