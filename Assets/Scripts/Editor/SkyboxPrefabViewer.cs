@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Environment.Data;
 using UnityEditor;
 using UnityEngine;
@@ -11,7 +13,7 @@ namespace Environment
 
         private Vector3 m_starFieldColor = Vector3.one; 
         private Vector3 m_starFieldPosition = Vector3.zero;
-        
+
         private void OnEnable() => m_Prefab = target as SkyboxPrefab;
 
         public override void OnInspectorGUI()
@@ -135,7 +137,7 @@ namespace Environment
             EditorGUILayout.Space(2);
             EditorGUILayout.LabelField("Events", EditorStyles.boldLabel);
             EditorGUILayout.Space(2);
-            
+
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onSunRise"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onSunSet"));
 

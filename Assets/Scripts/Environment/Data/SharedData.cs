@@ -19,8 +19,7 @@ namespace Environment.Data
         public static readonly SharedStatic<FixedArray<int>> CubeIndices = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, CNI>(); private class CNI {}
         public static readonly SharedStatic<FixedArray<int>> CubeFlippedIndices = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, CFI>(); private class CFI {}
         public static readonly SharedStatic<FixedArray<int>> CubeCrossIndices = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, CCI>(); private class CCI {}
-        public static readonly SharedStatic<FixedArray<int>> AONeighborOffsets = SharedStatic<FixedArray<int>>.GetOrCreate<SharedData, AO>(); private class AO {}
-        
+
         private BuildSharedSystem system;
         
         public SharedData() => system = new BuildSharedSystem();

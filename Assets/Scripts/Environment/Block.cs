@@ -6,6 +6,7 @@ namespace Environment
     public struct Block
     {
         public BlockType type;
+        //public int light;
         
         public Block(BlockType type) => this.type = type;
 

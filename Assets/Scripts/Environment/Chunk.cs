@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Environment.Data;
-using Environment.System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -30,7 +29,6 @@ namespace Environment
         public event Func<bool> OnChunkUpdate;
         
         private NativeMapData blockData;
-        private NativeLightData lightData;
         private NativeMeshData meshData;
 
         public bool Dirty => dirty;
@@ -52,7 +50,6 @@ namespace Environment
         {
             blockData?.jobHandle.Complete(); blockData?.Dispose();
             meshData?.jobHandle.Complete(); meshData?.Dispose();
-            lightData?.jobHandle.Complete(); lightData?.Dispose();
         }
 
         private void Start()
@@ -89,16 +86,10 @@ namespace Environment
             if (Updating || !World.Instance.CanUpdate) yield break;
 
             World.Instance.UpdatingChunks++;
-
-            var neighborBlocks = World.Instance.GetNeighborBlocks(chunkPosition, 1);
             
-            lightData?.Dispose();
-            lightData = new NativeLightData(chunkSize);
-            yield return lightData.Generate(neighborBlocks, chunkPosition, chunkSize, 1, argent);
-
             meshData?.Dispose();
             meshData = new NativeMeshData(chunkSize);
-            yield return meshData.Generate(blocks, lightData, chunkSize, argent);
+            yield return meshData.Generate(blocks, chunkSize, argent);
 
             meshData.GetMeshInformation(out int verticesSize);
 
@@ -129,7 +120,6 @@ namespace Environment
                     NativeColliderData.Instance.Enqueue(this, colmesh);
             }
 
-            lightData.Dispose();
             meshData.Dispose();
             dirty = false;
             argent = false;

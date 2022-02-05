@@ -15,8 +15,7 @@ namespace Environment.System
     {
         [ReadOnly] public NativeArray<Block> blocks;
         [ReadOnly] public int3 chunkSize;
-        [ReadOnly] public NativeArray<BlockLight> lightData;
-    
+
         [WriteOnly] public NativeArray<float3> vertices;
         [WriteOnly] public NativeArray<float3> normals;
         [WriteOnly] public NativeArray<float4> uvs;
@@ -83,7 +82,7 @@ namespace Environment.System
                             #region Step2: Get the calculated light data
                             
                             // Get the light data results
-                            var light = lightData[gridPosition.To1DIndex(chunkSize)];
+                            //var light = lightData[gridPosition.To1DIndex(chunkSize)];
                             
                             #endregion
     
@@ -100,10 +99,10 @@ namespace Environment.System
                                     nextPosition[SharedData.DirectionAlignedY.Data[direction]] += height;
 
                                     var nextBlock = blocks[nextPosition.To1DIndex(chunkSize)];
-                                    var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
+                                    //var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
   
                                     if (nextBlock.type != block.type) break;
-                                    if (!nextLight.CompareFace(light, direction)) break;
+                                    //if (!nextLight.CompareFace(light, direction)) break;
                                     if (hashMap.ContainsKey(nextPosition)) break;
 
                                     hashMap.TryAdd(nextPosition, default);
@@ -120,9 +119,8 @@ namespace Environment.System
                                         nextPosition[SharedData.DirectionAlignedY.Data[direction]] += dy;
 
                                         var nextBlock = blocks[nextPosition.To1DIndex(chunkSize)];
-                                        var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
-                                        
-                                        if (nextBlock.type != block.type || hashMap.ContainsKey(nextPosition) || !nextLight.CompareFace(light, direction))
+                            
+                                        if (nextBlock.type != block.type || hashMap.ContainsKey(nextPosition))
                                         {
                                             isDone = true;
                                             break;
@@ -166,6 +164,7 @@ namespace Environment.System
 
                                     for (int i = 0; i < 6; i++)
                                         liquidIndices.Add(SharedData.CubeFlippedIndices.Data[12 + i] + numVertices);
+                                    
                                     break;
                                 }
                                 case (long) BlockShape.Foliage:
@@ -203,6 +202,7 @@ namespace Environment.System
 
                                     for (int i = 0; i < 12; i++)
                                         foliageIndices.Add(numVertices + SharedData.CubeCrossIndices.Data[i]);
+                                    
                                     break;
                                 }
                                 case (long) BlockShape.Block:
@@ -215,7 +215,7 @@ namespace Environment.System
                                         vertex[SharedData.DirectionAlignedX.Data[direction]] *= width;
                                         vertex[SharedData.DirectionAlignedY.Data[direction]] *= height;
 
-                                        colors[numVertices + i] = new Color(0, 0, 0, light.ambient[i + direction * 4]);
+                                        colors[numVertices + i] = new Color(0, 0, 0, 1);
                                         vertices[numVertices + i] = vertex + gridPosition;
                                         normals[numVertices + i] = SharedData.CubeDirectionOffsets.Data[direction];
                                         uvs[numVertices + i] = new float4
@@ -226,12 +226,7 @@ namespace Environment.System
                                     }
 
                                     for (int i = 0; i < 6; i++)
-                                    {
-                                        if (light.ambient[direction * 4] + light.ambient[direction * 4 + 3] < light.ambient[direction * 4 + 1] + light.ambient[direction * 4 + 2])
-                                            blockIndices.AddNoResize(SharedData.CubeFlippedIndices.Data[direction * 6 + i] + numVertices);
-                                        else
-                                            blockIndices.AddNoResize(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
-                                    }
+                                        blockIndices.AddNoResize(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
 
                                     break;
                                 }
@@ -245,7 +240,7 @@ namespace Environment.System
                                         vertex[SharedData.DirectionAlignedX.Data[direction]] *= width;
                                         vertex[SharedData.DirectionAlignedY.Data[direction]] *= height;
 
-                                        colors[numVertices + i] = new Color(0, 0, 0, light.ambient[i + direction * 4]);
+                                        colors[numVertices + i] = new Color(0, 0, 0, 1);
                                         vertices[numVertices + i] = vertex + gridPosition;
                                         normals[numVertices + i] = SharedData.CubeDirectionOffsets.Data[direction];
                                         uvs[numVertices + i] = new float4
@@ -256,12 +251,7 @@ namespace Environment.System
                                     }
 
                                     for (int i = 0; i < 6; i++)
-                                    {
-                                        if (light.ambient[direction * 4] + light.ambient[direction * 4 + 3] < light.ambient[direction * 4 + 1] + light.ambient[direction * 4 + 2])
-                                            transparentIndices.Add(SharedData.CubeFlippedIndices.Data[direction * 6 + i] + numVertices);
-                                        else
-                                            transparentIndices.Add(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
-                                    }
+                                        transparentIndices.Add(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
 
                                     break;
                                 }

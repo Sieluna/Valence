@@ -10,11 +10,7 @@ namespace Environment.System
         private SkyboxPrefab m_Data;
         private TimePrefab m_Time;
         
-        public BuildSkyboxSystem(SkyboxPrefab data, TimePrefab time)
-        {
-            m_Data = data;
-            m_Time = time;
-        }
+        public BuildSkyboxSystem(SkyboxPrefab data, TimePrefab time) { m_Data = data; m_Time = time; }
 
         private readonly Vector3 m_Br = new Vector3(0.00519673f, 0.0121427f, 0.0296453f);
         private readonly Vector3 m_Bm = new Vector3(0.005721017f, 0.004451339f, 0.003146905f);
@@ -23,12 +19,12 @@ namespace Environment.System
         private const float m_Pi14 = 0.07957747f;
 
         private float m_curveTime, m_gradientTime;
-        
+
         private Transform m_HolderTransform, m_SunTransform, m_MoonTransform, m_LightTransform;
-        
+
         private Light m_lightComponent;
         private LensFlareComponentSRP m_SunFlareComponent;
-        
+
         public void Init()
         {
             m_HolderTransform = GameObject.Find("World").transform;
@@ -84,10 +80,11 @@ namespace Environment.System
             Shader.SetGlobalFloat(ShaderIDs.CloudPower, m_Data.cloudPowerCurve.Evaluate(m_curveTime));
             Shader.SetGlobalFloat(ShaderIDs.CloudIntensity, m_Data.cloudIntensityCurve.Evaluate(m_curveTime));
             var cloudRotationSpeed = 0f;
-            if (m_Data.cloudRotationSpeed != 0.0f)
+            if (m_Data.cloudRotationSpeed != 0f)
             {
                 cloudRotationSpeed += m_Data.cloudRotationSpeed * Time.deltaTime;
-                if (cloudRotationSpeed >= 1.0f) cloudRotationSpeed -= 1.0f;
+                if (cloudRotationSpeed >= 1f)
+                    cloudRotationSpeed = 0f;
             }
             Shader.SetGlobalFloat(ShaderIDs.CloudRotationSpeed, cloudRotationSpeed);
             
@@ -131,11 +128,9 @@ namespace Environment.System
             m_SunFlareComponent.intensity = m_Data.flareIntensityCurve.Evaluate(m_curveTime);
             m_lightComponent.color = m_Data.lightGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientIntensity = m_Data.ambientIntensityCurve.Evaluate(m_curveTime);
-            Shader.SetGlobalFloat(ShaderIDs.GlobalAmbientIntensity, m_Data.ambientIntensityCurve.Evaluate(m_curveTime));
             RenderSettings.ambientSkyColor = m_Data.ambientSkyGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientEquatorColor = m_Data.equatorSkyGradientColor.Evaluate(m_gradientTime);
             RenderSettings.ambientGroundColor = m_Data.groundSkyGradientColor.Evaluate(m_gradientTime);
-            
         }
     }
 }

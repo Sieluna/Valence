@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef475a953599436e8a2f4cd1213a5618, type: 3}
   m_Name: Time
   m_EditorClassIdentifier: 
-  time: 15.6549015
+  time: 19.18854
   dayCycleLength: 1

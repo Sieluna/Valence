@@ -882,7 +882,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  cloudRotationSpeed: 0.0025
+  cloudRotationSpeed: 0.0057
   fogDistanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -1226,6 +1226,8 @@ MonoBehaviour:
   sunDiskSize: 0.5
   moonDiskSize: 0.5
   cloudMode: 1
+  resolution: 16
+  timeSlicing: 0
   onSunRise:
     m_PersistentCalls:
       m_Calls: []

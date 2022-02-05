@@ -120,6 +120,7 @@ Material:
     - _EnvironmentReflections: 1
     - _GRASS: 0
     - _GlobalAO: 1
+    - _GlobalAmbientIntensity: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0

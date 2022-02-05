@@ -58,7 +58,7 @@ namespace Environment.Data
             if (counter.IsCreated) counter.Dispose();
         }
 
-        public IEnumerator Generate(Block[] blocks, NativeLightData lightData, int3 chunkSize, bool argent = false)
+        public IEnumerator Generate(Block[] blocks, int3 chunkSize, bool argent = false)
         {
             nativeBlocks.CopyFrom(blocks);
             
@@ -66,7 +66,6 @@ namespace Environment.Data
             {
                 blocks = nativeBlocks,
                 chunkSize = chunkSize,
-                lightData = lightData.nativeLightData,
                 vertices = nativeVertices,
                 normals = nativeNormals,
                 uvs = nativeUVs,
@@ -78,7 +77,7 @@ namespace Environment.Data
                 counter = counter
             }.Schedule();
 
-            int frameCount = lightData.frameCount;
+            int frameCount = 0;
             yield return new WaitUntil(() =>
             {
                 frameCount++;

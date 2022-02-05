@@ -167,7 +167,6 @@
 				float3 starfield = (stars + milkyWay) * _StarfieldColorBalance * moonMask * horizonExtinction * _StarfieldIntensity;
 
 				// Clouds.
-				//float cloudRotationSpeed = -0.1 * _Time.x;
 				float2 cloud_uv = float2(-atan2(viewDir.z, viewDir.x), -acos(viewDir.y)) / float2(2.0 * _Pi, _Pi) + float2(-_CloudRotationSpeed, 0.0);
 				float4 cloudTex = tex2D(_CloudTexture, cloud_uv);
 				float cloudAlpha = 1.0 - cloudTex.b;

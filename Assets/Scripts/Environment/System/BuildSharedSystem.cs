@@ -43,9 +43,7 @@ namespace Environment.System
 
             SharedData.CubeCrossIndices.Data = new FixedArray<int>(12);
             SharedData.CubeCrossIndices.Data.CopyFrom(4, 3, 1, 4, 6, 3, 0, 7, 5, 0, 2, 7);
-
-            SharedData.AONeighborOffsets.Data = new FixedArray<int>(12);
-            SharedData.AONeighborOffsets.Data.CopyFrom(0, 1, 2, 6, 7, 0, 2, 3, 4, 4, 5, 6);
+            
         }
 
         private readonly ISharedSystem[] m_Systems = 
