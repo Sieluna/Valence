@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38baecfc1d20448e96cae60765ecb52b, type: 3}
+  m_Name: CelestiumSystem
+  m_EditorClassIdentifier: 
+  m_CelestiumData: {fileID: 11400000, guid: d117582adb24397498eddb0e699a3b25, type: 2}
+  m_TimeData: {fileID: 11400000, guid: 3ea9f0029cbad0641bb3f44efcd1ab82, type: 2}
