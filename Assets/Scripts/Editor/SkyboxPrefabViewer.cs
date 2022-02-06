@@ -120,9 +120,9 @@ namespace Environment
             EditorGUILayout.PropertyField(serializedObject.FindProperty("lightGradientColor"), new GUIContent("Directional Light Color"));
             EditorGUILayout.CurveField(serializedObject.FindProperty("ambientIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 8.0f), new GUIContent("Environment Intensity"));
             
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("ambientSkyGradientColor"), new GUIContent("Environment Ambient Color"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("equatorSkyGradientColor"), new GUIContent("Environment Equator Color"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("groundSkyGradientColor"), new GUIContent("Environment Ground Color"));
+            //EditorGUILayout.PropertyField(serializedObject.FindProperty("ambientSkyGradientColor"), new GUIContent("Environment Ambient Color"));
+            //EditorGUILayout.PropertyField(serializedObject.FindProperty("equatorSkyGradientColor"), new GUIContent("Environment Equator Color"));
+            //EditorGUILayout.PropertyField(serializedObject.FindProperty("groundSkyGradientColor"), new GUIContent("Environment Ground Color"));
             
             // Options
             EditorGUILayout.Space(2);

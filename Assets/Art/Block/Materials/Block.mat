@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Block
-  m_Shader: {fileID: -6465566751694194690, guid: f447b60e0b8905149b047aa6adb7b61e,
+  m_Shader: {fileID: -6465566751694194690, guid: d8522a751ae331048a2279f84f5c4e6e,
     type: 3}
   m_ShaderKeywords: _USECOLORMASK
   m_LightmapFlags: 1
@@ -34,7 +34,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: ef2570c875e3ecd4e8cc4fda5c6a868b, type: 3}
+        m_Texture: {fileID: 2800000, guid: dc7f0855d2feae248b452f9f08342f78, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -42,7 +42,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorMask:
-        m_Texture: {fileID: 2800000, guid: 3345997feecda434196779409bf8a1eb, type: 3}
+        m_Texture: {fileID: 2800000, guid: c85543a6226a93d429e3931f5b51b7b5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -62,7 +62,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MSEMap:
-        m_Texture: {fileID: 2800000, guid: d259efc5de03e3745a43a931019fb6c5, type: 3}
+        m_Texture: {fileID: 2800000, guid: e7a5885308c7e7b4494ecaa17f86175e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -74,7 +74,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: ad8874dbbf5e3c24ebc1182323803034, type: 3}
+        m_Texture: {fileID: 2800000, guid: d851e60cc91643440bf899a7af3555e4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:

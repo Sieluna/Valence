@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SkyBox
-  m_Shader: {fileID: 4800000, guid: 56bfc2d8a96d44a4a89ed49cccb321f7, type: 3}
+  m_Shader: {fileID: 4800000, guid: 08eb1551d3b43a54c8ac59832b3047c9, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0

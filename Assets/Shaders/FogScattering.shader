@@ -14,8 +14,8 @@
 		Pass
 		{
 			HLSLPROGRAM
-			#pragma vertex vertex_program
-			#pragma fragment fragment_program
+			#pragma vertex vert
+			#pragma fragment frag
 			#pragma target 3.0
 			#include "UnityCG.cginc"
 
@@ -86,7 +86,7 @@
 			};
 
 			// Vertex shader.
-			Varyings vertex_program(Attributes v)
+			Varyings vert(Attributes v)
 			{
 				Varyings Output;
 
@@ -110,7 +110,7 @@
 			}
 
 			// Fragment shader || Pixel shader.
-			float4 fragment_program(Varyings Input) : SV_Target
+			float4 frag(Varyings Input) : SV_Target
 			{
 				//Original scene.
 				float3 screen = tex2D(_MainTex, UnityStereoTransformScreenSpaceTex(Input.uv)).rgb;

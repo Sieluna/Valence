@@ -11,8 +11,8 @@
 		{
 			HLSLPROGRAM
 
-			#pragma vertex vertex_program
-			#pragma fragment fragment_program
+			#pragma vertex vert
+			#pragma fragment frag
 			#pragma target 3.0
 			#include "UnityCG.cginc"
 
@@ -77,7 +77,7 @@
 			};
 			
 			// Vertex shader
-			Varyings vertex_program(Attributes Input)
+			Varyings vert(Attributes Input)
 			{
 				Varyings Output = (Varyings)0;
 
@@ -96,7 +96,7 @@
 			}
 			
 			// Fragment shader || Pixel shader
-			float4 fragment_program(Varyings Input) : SV_Target
+			float4 frag(Varyings Input) : SV_Target
 			{
 				// Directions
 			    float r = length(float3(0.0, 50.0, 0.0));

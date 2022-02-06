@@ -43,7 +43,7 @@ namespace Environment.System
         {
             m_curveTime = (m_Data.setTimeByCurve) ? m_Data.dayLengthCurve.Evaluate(m_Time.time) : m_Time.time;
             m_gradientTime = m_curveTime / 24f;
-            
+
             Shader.SetGlobalTexture(ShaderIDs.SunTexture, m_Data.sunTexture);
             Shader.SetGlobalTexture(ShaderIDs.MoonTexture, m_Data.moonTexture);
             Shader.SetGlobalTexture(ShaderIDs.CloudTexture, m_Data.cloudTexture);
@@ -127,10 +127,11 @@ namespace Environment.System
             m_lightComponent.intensity = m_Data.lightIntensityCurve.Evaluate(m_curveTime);
             m_SunFlareComponent.intensity = m_Data.flareIntensityCurve.Evaluate(m_curveTime);
             m_lightComponent.color = m_Data.lightGradientColor.Evaluate(m_gradientTime);
+            
             RenderSettings.ambientIntensity = m_Data.ambientIntensityCurve.Evaluate(m_curveTime);
-            RenderSettings.ambientSkyColor = m_Data.ambientSkyGradientColor.Evaluate(m_gradientTime);
-            RenderSettings.ambientEquatorColor = m_Data.equatorSkyGradientColor.Evaluate(m_gradientTime);
-            RenderSettings.ambientGroundColor = m_Data.groundSkyGradientColor.Evaluate(m_gradientTime);
+            //RenderSettings.ambientSkyColor = m_Data.ambientSkyGradientColor.Evaluate(m_gradientTime);
+            //RenderSettings.ambientEquatorColor = m_Data.equatorSkyGradientColor.Evaluate(m_gradientTime);
+            //RenderSettings.ambientGroundColor = m_Data.groundSkyGradientColor.Evaluate(m_gradientTime);
         }
     }
 }

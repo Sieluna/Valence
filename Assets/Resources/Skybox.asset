@@ -1010,6 +1010,15 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 8
+      value: 0.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 12
       value: 1
       inSlope: 0
       outSlope: 0
@@ -1019,7 +1028,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 16
-      value: 1
+      value: 0.9
       inSlope: 0
       outSlope: 0
       tangentMode: 1
@@ -1136,98 +1145,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ambientSkyGradientColor:
-    serializedVersion: 2
-    key0: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 1}
-    key1: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 1}
-    key2: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key3: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key4: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 0}
-    key5: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 15420
-    ctime1: 18890
-    ctime2: 22359
-    ctime3: 44525
-    ctime4: 48188
-    ctime5: 50693
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_NumColorKeys: 6
-    m_NumAlphaKeys: 2
-  equatorSkyGradientColor:
-    serializedVersion: 2
-    key0: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 1}
-    key1: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 1}
-    key2: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key3: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key4: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 0}
-    key5: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 15420
-    ctime1: 18890
-    ctime2: 22359
-    ctime3: 44525
-    ctime4: 48188
-    ctime5: 50693
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_NumColorKeys: 6
-    m_NumAlphaKeys: 2
-  groundSkyGradientColor:
-    serializedVersion: 2
-    key0: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 1}
-    key1: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 1}
-    key2: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key3: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 0}
-    key4: {r: 0.7941176, g: 0.5514706, b: 0.3970588, a: 0}
-    key5: {r: 0.043137256, g: 0.21960784, b: 0.44313726, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 15420
-    ctime1: 18890
-    ctime2: 22359
-    ctime3: 44525
-    ctime4: 48188
-    ctime5: 50693
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_NumColorKeys: 6
-    m_NumAlphaKeys: 2
   sunDiskSize: 0.5
   moonDiskSize: 0.5
   cloudMode: 1
-  resolution: 16
-  timeSlicing: 0
   onSunRise:
     m_PersistentCalls:
       m_Calls: []

@@ -58,9 +58,9 @@ namespace Environment.Data
         public AnimationCurve flareIntensityCurve = AnimationCurve.Linear(0.0f, 0.0f, 24.0f, 0.0f);
         public Gradient lightGradientColor = new Gradient();
         public AnimationCurve ambientIntensityCurve = AnimationCurve.Linear(0.0f, 1.0f, 24.0f, 1.0f);
-        public Gradient ambientSkyGradientColor = new Gradient();
-        public Gradient equatorSkyGradientColor = new Gradient();
-        public Gradient groundSkyGradientColor = new Gradient();
+        //public Gradient ambientSkyGradientColor = new Gradient();
+        //public Gradient equatorSkyGradientColor = new Gradient();
+        //public Gradient groundSkyGradientColor = new Gradient();
 
         // Options
         public float sunDiskSize = 0.5f;
