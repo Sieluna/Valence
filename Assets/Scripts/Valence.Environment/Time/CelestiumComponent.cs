@@ -1,7 +1,7 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 
-namespace Valence.Environment.Time
+namespace Valence.Environment
 {
     public enum CelestiumSimulationType
     {
@@ -9,7 +9,7 @@ namespace Valence.Environment.Time
         Realistic
     }
 
-    [CreateAssetMenu(menuName = "Time/Create Celestium Component", fileName = "CelestiumComponent")]
+    [CreateAssetMenu(fileName = nameof(CelestiumComponent), menuName = "Time/Create Celestium Component")]
     public class CelestiumComponent : ScriptableObject
     {
         public CelestiumSimulationType SimulationType;

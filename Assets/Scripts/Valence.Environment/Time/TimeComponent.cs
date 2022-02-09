@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Valence.Environment.Time
+namespace Valence.Environment
 {
-    [CreateAssetMenu(menuName = "Time/Create Time Component", fileName = "TimeComponent")]
+    [CreateAssetMenu(fileName = nameof(TimeComponent), menuName = "Time/Create Time Component")]
     public class TimeComponent : ScriptableObject
     {
         [Range(0f, 24f)] public float Time;

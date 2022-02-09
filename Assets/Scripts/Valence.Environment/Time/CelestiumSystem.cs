@@ -1,9 +1,9 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 
-namespace Valence.Environment.Time
+namespace Valence.Environment
 {
-    [CreateAssetMenu(menuName = "Time/Create Celestium System", fileName = "CelestiumSystem")]
+    [CreateAssetMenu(fileName = nameof(CelestiumSystem), menuName = "Time/Create Celestium System")]
     public class CelestiumSystem : System
     {
         [SerializeField] private CelestiumComponent m_CelestiumData;

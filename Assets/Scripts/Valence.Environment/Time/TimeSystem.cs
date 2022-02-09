@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Valence.Environment.Time
+namespace Valence.Environment
 {
-    [CreateAssetMenu(menuName = "Time/Create Time System", fileName = "TimeSystem")]
+    [CreateAssetMenu(fileName = nameof(TimeSystem), menuName = "Time/Create Time System")]
     public class TimeSystem : System
     {
         [SerializeField] private TimeComponent m_TimeData;

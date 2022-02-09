@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Rendering.Universal;
 
-namespace Valence.Environment.Skybox
+namespace Valence.Environment
 {
     public class SkyboxRenderFeature : ScriptableRendererFeature
     {
