@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 namespace Environment.Data
 {
     public enum CloudMode { Off, Static };
-    
+
     [CreateAssetMenu(fileName = "New Skybox", menuName = "Skybox Prefab")]
     public class SkyboxPrefab : ScriptableObject
     {
@@ -64,6 +65,12 @@ namespace Environment.Data
         
         public CloudMode cloudMode = CloudMode.Static;
         
+        // Environment Reflection
+        public bool enableReflection = false;
+        public int environmentReflectionResolution;
+        public ReflectionProbeTimeSlicingMode environmentReflectionTimeSlicingMode;
+        public int updateRate;
+        
         // Event
         public UnityEvent onSunRise;
         public UnityEvent onSunSet;
@@ -81,6 +88,10 @@ namespace Environment.Data
                     skyMaterial.DisableKeyword("_ENABLE_CLOUD");
                     break;
             }
+            skyMaterial.SetTexture(ShaderIDs.SunTexture, sunTexture);
+            skyMaterial.SetTexture(ShaderIDs.MoonTexture, moonTexture);
+            skyMaterial.SetTexture(ShaderIDs.CloudTexture, cloudTexture);
+            skyMaterial.SetTexture(ShaderIDs.StarfieldTexture, starfieldTexture);
         }
     }
 }

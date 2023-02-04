@@ -26,19 +26,19 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: c4d1b101baf611446b44ce7e963a5c84, type: 2}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
   m_DefaultReflectionMode: 0
-  m_DefaultReflectionResolution: 32
+  m_DefaultReflectionResolution: 64
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 410087040}
-  m_IndirectSpecularColor: {r: 0.59665954, g: 0.7443875, b: 0.9037043, a: 1}
+  m_IndirectSpecularColor: {r: 0.17705569, g: 0.22164339, b: 0.30391133, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 3a6950a1469f09c4899b4720ef7df730,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -192,8 +193,8 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 1.8
+  m_Radius: 0.39
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -581,7 +582,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 690527411}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.974466, y: 48.568222, z: 54.075928}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -737,13 +738,11 @@ MonoBehaviour:
     x: 8
     y: 8
   chunkMaterial:
-  - {fileID: 2100000, guid: e8ca50dc10b15e34eb1ef01523e3894c, type: 2}
-  - {fileID: 2100000, guid: 8ab717f5f4660b047a05276dca45fe02, type: 2}
+  - {fileID: 2100000, guid: bc97d8be6d8443f44b75b7d5ada5a92d, type: 2}
+  - {fileID: 2100000, guid: cdb5a16f31ee9ca43b20ee76fcbdffbf, type: 2}
   - {fileID: 2100000, guid: 810ffeed0b008ce4690300c99508da0d, type: 2}
-  - {fileID: 2100000, guid: e8ca50dc10b15e34eb1ef01523e3894c, type: 2}
+  - {fileID: 2100000, guid: bc97d8be6d8443f44b75b7d5ada5a92d, type: 2}
   maxGenerateChunksInFrame: 1
-  skybox: {fileID: 11400000, guid: 0451986f5d86e4d44aca7b069ddb5169, type: 2}
-  time: {fileID: 11400000, guid: 16a6c77acc544974fafeca67b92a1f48, type: 2}
 --- !u!4 &2139749289
 Transform:
   m_ObjectHideFlags: 0

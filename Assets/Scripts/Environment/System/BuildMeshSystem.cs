@@ -40,7 +40,7 @@ namespace Environment.System
          * 4/5. daX = 0        , daY = 1        , daZ = 2                                           *
          *   => x = chunkSize.x, y = chunkSize.y, d = chunkSize.z => gridPosition = (x, y, depth)   *
          * ---------------------------------------------------------------------------------------- */
-        public unsafe void Execute()
+        public void Execute()
         {
             for (int direction = 0; direction < 6; direction++)
             {
@@ -91,7 +91,7 @@ namespace Environment.System
                             #region Step3: Mesh combine in xy direction
     
                             int height = 1, width = 1;
-                            if (shape != (long) BlockShape.Transparent && shape != (long) BlockShape.Foliage)
+                            if (shape != (long) BlockShape.Transparent && shape != (long) BlockShape.Liquid && shape != (long) BlockShape.Foliage)
                             {
                                 for (height = 1; height + y < chunkSize[SharedData.DirectionAlignedY.Data[direction]]; height++)
                                 {
@@ -99,10 +99,8 @@ namespace Environment.System
                                     nextPosition[SharedData.DirectionAlignedY.Data[direction]] += height;
 
                                     var nextBlock = blocks[nextPosition.To1DIndex(chunkSize)];
-                                    //var nextLight = lightData[nextPosition.To1DIndex(chunkSize)];
-  
+                                    
                                     if (nextBlock.type != block.type) break;
-                                    //if (!nextLight.CompareFace(light, direction)) break;
                                     if (hashMap.ContainsKey(nextPosition)) break;
 
                                     hashMap.TryAdd(nextPosition, default);
@@ -153,9 +151,6 @@ namespace Environment.System
                                         // 4(0,1,0) --> 5(1,1,0)
                                         float3 vertex = SharedData.CubeVertices.Data[SharedData.CubeFaces.Data[i + 2 * 4]];
 
-                                        vertex[0] *= width;
-                                        vertex[2] *= height;
-
                                         colors[numVertices + i] = new Color(0, 0, 0, 1);
                                         vertices[numVertices + i] = vertex + gridPosition + new float3(0, -0.13f, 0);
                                         normals[numVertices + i] = new float3(0, 1, 0);
@@ -188,7 +183,7 @@ namespace Environment.System
 
                                         float3 vertex = SharedData.CubeVertices.Data[SharedData.CubeFaces.Data[i]];
 
-                                        colors[numVertices + i] = new Color(0, 0, 0, 1);
+                                        colors[numVertices + i] = block.color;
                                         vertices[numVertices + i] = vertex + gridPosition + new float3(0, -0.04f, 0);
                                         normals[numVertices + i] = (i < 4) ? new float3(0.7f, 0, 0.7f) : new float3(-0.7f, 0, 0.7f);
                                         uvs[numVertices + i] = new float4
@@ -215,7 +210,7 @@ namespace Environment.System
                                         vertex[SharedData.DirectionAlignedX.Data[direction]] *= width;
                                         vertex[SharedData.DirectionAlignedY.Data[direction]] *= height;
 
-                                        colors[numVertices + i] = new Color(0, 0, 0, 1);
+                                        colors[numVertices + i] = block.color;
                                         vertices[numVertices + i] = vertex + gridPosition;
                                         normals[numVertices + i] = SharedData.CubeDirectionOffsets.Data[direction];
                                         uvs[numVertices + i] = new float4
@@ -226,7 +221,7 @@ namespace Environment.System
                                     }
 
                                     for (int i = 0; i < 6; i++)
-                                        blockIndices.AddNoResize(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
+                                        blockIndices.Add(SharedData.CubeIndices.Data[direction * 6 + i] + numVertices);
 
                                     break;
                                 }
@@ -240,7 +235,7 @@ namespace Environment.System
                                         vertex[SharedData.DirectionAlignedX.Data[direction]] *= width;
                                         vertex[SharedData.DirectionAlignedY.Data[direction]] *= height;
 
-                                        colors[numVertices + i] = new Color(0, 0, 0, 1);
+                                        colors[numVertices + i] = block.color;
                                         vertices[numVertices + i] = vertex + gridPosition;
                                         normals[numVertices + i] = SharedData.CubeDirectionOffsets.Data[direction];
                                         uvs[numVertices + i] = new float4

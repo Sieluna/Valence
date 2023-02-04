@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Environment
 {
-    [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter), typeof(MeshCollider))]
     public class Chunk : MonoBehaviour
     {
         private int3 chunkPosition;
@@ -38,9 +37,9 @@ namespace Environment
 
         private void Awake()
         {
-            meshFilter = GetComponent<MeshFilter>();
-            meshRenderer = GetComponent<MeshRenderer>();
-            meshCollider = GetComponent<MeshCollider>();
+            meshFilter = gameObject.AddComponent<MeshFilter>();
+            meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            meshCollider = gameObject.AddComponent<MeshCollider>();
             mesh = new Mesh();
             colmesh = new Mesh();
             OnChunkUpdate = () => true;
@@ -68,9 +67,9 @@ namespace Environment
 
         private IEnumerator InitUpdater()
         {
-            blocks = new Block[chunkSize.x * chunkSize.y * chunkSize.z]; // 实例化一堆Air         
+            blocks = new Block[chunkSize.x * chunkSize.y * chunkSize.z];
             blockData = new NativeMapData(chunkSize);
-            yield return blockData.Generate(blocks, chunkPosition, chunkSize); // 等待noise生成
+            yield return blockData.Generate(blocks, chunkPosition, chunkSize);
             dirty = true;
             initialized = true;
         }
