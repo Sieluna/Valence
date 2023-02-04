@@ -36,16 +36,6 @@ Varyings UniversalVertexMeta(Attributes input)
     return output;
 }
 
-half4 UniversalFragmentMeta(Varyings fragIn, MetaInput metaInput)
-{
-#ifdef EDITOR_VISUALIZATION
-    metaInput.VizUV = fragIn.VizUV;
-    metaInput.LightCoord = fragIn.LightCoord;
-#endif
-
-    return UnityMetaFragment(metaInput);
-}
-
 half4 UniversalFragmentMetaLit(Varyings input) : SV_Target
 {
     SurfaceData surfaceData;
@@ -57,5 +47,10 @@ half4 UniversalFragmentMetaLit(Varyings input) : SV_Target
     MetaInput metaInput;
     metaInput.Albedo = brdfData.diffuse + brdfData.specular * brdfData.roughness * 0.5;
     metaInput.Emission = surfaceData.emission;
-    return UniversalFragmentMeta(input, metaInput);
+#ifdef EDITOR_VISUALIZATION
+    metaInput.VizUV = input.VizUV;
+    metaInput.LightCoord = input.LightCoord;
+#endif
+
+    return UnityMetaFragment(metaInput);
 }

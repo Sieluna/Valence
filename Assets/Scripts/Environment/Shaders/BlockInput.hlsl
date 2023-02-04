@@ -112,9 +112,7 @@ half Alpha(half albedoAlpha, half4 color, half cutoff)
     half alpha = color.a;
 #endif
 
-#if defined(_ALPHATEST_ON)
-    clip(alpha - cutoff);
-#endif
+    alpha = AlphaDiscard(alpha, cutoff);
 
     return alpha;
 }
@@ -220,13 +218,8 @@ half4 SampleMetallicSpecGloss(float4 uv, half albedoAlpha)
 half SampleOcclusion(float4 uv)
 {
     #ifdef _OCCLUSIONMAP
-        // TODO: Controls things like these by exposing SHADER_QUALITY levels (low, medium, high)
-        #if defined(SHADER_API_GLES)
-            return SampleTexture(_OcclusionMap, sampler_OcclusionMap, uv).g;
-        #else
-            half occ = SampleTexture(_OcclusionMap, sampler_OcclusionMap, uv).g;
-            return LerpWhiteTo(occ, _OcclusionStrength);
-        #endif
+        half occ = SampleTexture(_OcclusionMap, sampler_OcclusionMap, uv).g;
+        return LerpWhiteTo(occ, _OcclusionStrength);
     #else
         return half(1.0);
     #endif
@@ -321,7 +314,7 @@ inline void InitializeStandardLitSurfaceData(float4 uv, float3 color, out Surfac
     outSurfaceData.albedo = albedoAlpha.rgb * _BaseColor.rgb;
 #endif
     outSurfaceData.albedo = AlphaModulate(outSurfaceData.albedo, outSurfaceData.alpha);
-    
+
 #if _SPECULAR_SETUP
     outSurfaceData.metallic = half(1.0);
     outSurfaceData.specular = specGloss.rgb;

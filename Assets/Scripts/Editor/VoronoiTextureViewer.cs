@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Unity.Burst;
 using Unity.Collections;
@@ -10,50 +9,50 @@ using Utilities;
 
 public class VoronoiTextureViewer : EditorWindow
 {
-    private Texture2D m_Texture;
+    private Texture2D m_texture;
 
-    private NativeArray<byte> m_Buffer;
+    private NativeArray<byte> m_buffer;
 
-    private int2 m_Resolution;
+    private int2 m_resolution;
 
-    private float m_Record;
+    private float m_record;
     
     [MenuItem("Window/Voronoi Viewer")]
     private static void ShowWindow() => GetWindow(typeof(VoronoiTextureViewer));
     
     private void OnGUI()
     {
-        if (m_Resolution.Equals(null) || m_Resolution.x != (int)position.width || m_Resolution.y != (int) position.height)
+        if (m_resolution.Equals(null) || m_resolution.x != (int)position.width || m_resolution.y != (int) position.height)
         {
-            m_Resolution = new int2((int) position.width, (int) position.height);
-            m_Buffer = new NativeArray<byte>((int)position.width * (int)position.height * 3, Allocator.Persistent);
-            m_Record = 0f;
+            m_resolution = new int2((int) position.width, (int) position.height);
+            m_buffer = new NativeArray<byte>((int)position.width * (int)position.height * 3, Allocator.Persistent);
+            m_record = 0f;
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             Paint((int)position.width, (int)position.height);
             stopWatch.Stop();
-            m_Record = stopWatch.ElapsedMilliseconds;
+            m_record = stopWatch.ElapsedMilliseconds;
         }
-        EditorGUI.DrawPreviewTexture(GUILayoutUtility.GetRect(position.width, position.height), m_Texture);
-        EditorGUI.LabelField(new Rect(5, 5, 100, 20),  m_Record + " ms", new GUIStyle { normal = { textColor = Color.green }});
+        EditorGUI.DrawPreviewTexture(GUILayoutUtility.GetRect(position.width, position.height), m_texture);
+        EditorGUI.LabelField(new Rect(5, 5, 100, 20),  m_record + " ms", new GUIStyle { normal = { textColor = Color.green }});
     }
 
     private void OnDisable()
     {
-        if (m_Buffer.IsCreated) m_Buffer.Dispose();
+        if (m_buffer.IsCreated) m_buffer.Dispose();
     }
 
     private void Paint(int width, int height)
     {
-        m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+        m_texture = new Texture2D(width, height, TextureFormat.RGB24, false);
         var jobHandle = new GenerateNoiseTexture
         {
             resolution = new int2(width, height),
-            buffer = m_Buffer,
+            buffer = m_buffer,
         }.Schedule(width * height, 64);
         jobHandle.Complete();
-        m_Texture.SetPixelData(m_Buffer, 0);
-        m_Texture.Apply();
+        m_texture.SetPixelData(m_buffer, 0);
+        m_texture.Apply();
     }
     
     [BurstCompile(OptimizeFor = OptimizeFor.Performance)]

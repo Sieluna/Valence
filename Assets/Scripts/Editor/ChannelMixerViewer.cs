@@ -625,11 +625,13 @@ namespace TextureChannelMixer
 
         public ConnectionNodeData()
         {
-            channelRects = new Dictionary<EColorChannel, Rect>();
-            channelRects.Add(EColorChannel.Red, Rect.zero);
-            channelRects.Add(EColorChannel.Green, Rect.zero);
-            channelRects.Add(EColorChannel.Blue, Rect.zero);
-            channelRects.Add(EColorChannel.Alpha, Rect.zero);
+            channelRects = new Dictionary<EColorChannel, Rect>
+            {
+                { EColorChannel.Red, Rect.zero },
+                { EColorChannel.Green, Rect.zero },
+                { EColorChannel.Blue, Rect.zero },
+                { EColorChannel.Alpha, Rect.zero }
+            };
         }
     }
 
@@ -1683,7 +1685,7 @@ namespace TextureChannelMixer
             string path = EditorUtility.SaveFilePanel("Export Texture", exportPath, "Texture", "png");
             if (path == "") return;
             exportPath = path.Substring(0, path.LastIndexOf('/'));
-            System.IO.File.WriteAllBytes(path, bytes);
+            File.WriteAllBytes(path, bytes);
             if (path.Contains(Application.dataPath))
                 AssetDatabase.Refresh();
         }
@@ -1717,7 +1719,7 @@ namespace TextureChannelMixer
                 byte[] bytes = exportTexture.EncodeToPNG();
                 string path = exportPath + "/" + GetBulkExportName(i);
                 exportPath = path.Substring(0, path.LastIndexOf('/'));
-                System.IO.File.WriteAllBytes(path, bytes);
+                File.WriteAllBytes(path, bytes);
             }
             EditorUtility.ClearProgressBar();
             if (exportPath.Contains(Application.dataPath))
@@ -1921,11 +1923,6 @@ namespace TextureChannelMixer
 
     public static class Extensions
     {
-        public static void Swap<T>(this IList<T> list, int indexA, int indexB)
-        {
-            T tmp = list[indexA];
-            list[indexA] = list[indexB];
-            list[indexB] = tmp;
-        }
+        public static void Swap<T>(this IList<T> list, int indexA, int indexB) => (list[indexA], list[indexB]) = (list[indexB], list[indexA]);
     }
 }

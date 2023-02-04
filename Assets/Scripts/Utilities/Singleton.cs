@@ -33,9 +33,7 @@ namespace Utilities
             get
             {
                 if (instance == null)
-                {
-                    instance = CreateInstance<T>();                
-                }
+                    instance = CreateInstance<T>();
 
                 return instance;
             }

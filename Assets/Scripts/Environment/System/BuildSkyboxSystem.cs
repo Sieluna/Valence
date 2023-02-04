@@ -2,96 +2,95 @@ using Environment.Data;
 using Environment.Interface;
 using UnityEngine;
 using UnityEngine.Rendering;
-// ReSharper disable InconsistentNaming
 
 namespace Environment.System
 {
     public class BuildSkyboxSystem : ISharedSystem
     {
-        private readonly SkyboxPrefab m_Data;
-        private readonly TimePrefab m_Time;
+        private readonly SkyboxPrefab m_data;
+        private readonly TimePrefab m_time;
 
         public BuildSkyboxSystem()
         {
-            m_Data = Resources.Load<SkyboxPrefab>("Skybox");
-            m_Time = Resources.Load<TimePrefab>("Time");
+            m_data = Resources.Load<SkyboxPrefab>("Skybox");
+            m_time = Resources.Load<TimePrefab>("Time");
         }
 
-        private readonly Vector3 m_Br = new(0.00519673f, 0.0121427f, 0.0296453f);
-        private readonly Vector3 m_Bm = new(0.005721017f, 0.004451339f, 0.003146905f);
-        private readonly Vector3 m_MieG = new(0.4375f, 1.5625f, 1.5f);
+        private readonly Vector3 m_br = new(0.00519673f, 0.0121427f, 0.0296453f);
+        private readonly Vector3 m_bm = new(0.005721017f, 0.004451339f, 0.003146905f);
+        private readonly Vector3 m_mieG = new(0.4375f, 1.5625f, 1.5f);
 
         private float m_curveTime, m_gradientTime;
 
-        private Transform m_HolderTransform, m_SunTransform, m_MoonTransform, m_LightTransform;
+        private Transform m_holderTransform, m_sunTransform, m_moonTransform, m_lightTransform;
 
         private float m_cloudRotationSpeed;
 
         private Light m_lightComponent;
-        private LensFlareComponentSRP m_SunFlareComponent;
+        private LensFlareComponentSRP m_sunFlareComponent;
 
-        private ReflectionProbe m_EnvironmentProbe;
+        private ReflectionProbe m_environmentProbe;
 
-        private Cubemap m_EnvironmentReflection;
+        private Cubemap m_environmentReflection;
 
-        private int m_ProbeRenderId = -1;
+        private int m_probeRenderId = -1;
 
-        private bool m_EnableReflection;
+        private bool m_enableReflection;
         
         private ReflectionProbe EnvironmentProbe
         {
             get
             {
-                if (m_EnvironmentProbe == null)
+                if (m_environmentProbe == null)
                 {
                     var probeHolder = new GameObject("~EnvironmentReflectionProbe")
                     {
                         transform =
                         {
-                            parent = m_HolderTransform,
+                            parent = m_holderTransform,
                             position = new Vector3(0, -1000, 0), rotation = Quaternion.identity, localScale = Vector3.one
                         }
                     };
 
-                    m_EnvironmentProbe = probeHolder.AddComponent<ReflectionProbe>();
-                    m_EnvironmentProbe.resolution = m_Data.environmentReflectionResolution;
-                    m_EnvironmentProbe.size = new Vector3(1, 1, 1);
-                    m_EnvironmentProbe.cullingMask = 0;
-                    Debug.Log("[Skybox] Reflection Probe Resolution -> " + m_Data.environmentReflectionResolution);
+                    m_environmentProbe = probeHolder.AddComponent<ReflectionProbe>();
+                    m_environmentProbe.resolution = m_data.environmentReflectionResolution;
+                    m_environmentProbe.size = new Vector3(1, 1, 1);
+                    m_environmentProbe.cullingMask = 0;
+                    Debug.Log("[Skybox] Reflection Probe Resolution -> " + m_data.environmentReflectionResolution);
                 }
 
-                m_EnvironmentProbe.clearFlags = ReflectionProbeClearFlags.Skybox;
-                m_EnvironmentProbe.mode = ReflectionProbeMode.Realtime;
-                m_EnvironmentProbe.refreshMode = ReflectionProbeRefreshMode.ViaScripting;
-                m_EnvironmentProbe.timeSlicingMode = m_Data.environmentReflectionTimeSlicingMode;
-                m_EnvironmentProbe.hdr = false;
-                return m_EnvironmentProbe;
+                m_environmentProbe.clearFlags = ReflectionProbeClearFlags.Skybox;
+                m_environmentProbe.mode = ReflectionProbeMode.Realtime;
+                m_environmentProbe.refreshMode = ReflectionProbeRefreshMode.ViaScripting;
+                m_environmentProbe.timeSlicingMode = m_data.environmentReflectionTimeSlicingMode;
+                m_environmentProbe.hdr = false;
+                return m_environmentProbe;
             }
         }
         
-        private Cubemap EnvironmentReflection => m_EnvironmentReflection ??= new Cubemap(EnvironmentProbe.resolution, TextureFormat.RGBA32, true);
+        private Cubemap EnvironmentReflection => m_environmentReflection ??= new Cubemap(EnvironmentProbe.resolution, TextureFormat.RGBA32, true);
         
         public void Init()
         {
-            m_EnableReflection = m_Data.enableReflection;
+            m_enableReflection = m_data.enableReflection;
             
-            m_HolderTransform = GameObject.Find("World").transform;
-            m_SunTransform = GameObject.Find("Sun").transform;
-            m_MoonTransform = GameObject.Find("Moon").transform;
-            m_LightTransform = GameObject.Find("Light").transform;
+            m_holderTransform = GameObject.Find("World").transform;
+            m_sunTransform = GameObject.Find("Sun").transform;
+            m_moonTransform = GameObject.Find("Moon").transform;
+            m_lightTransform = GameObject.Find("Light").transform;
 
-            m_lightComponent = m_LightTransform.GetComponent<Light>();
-            m_SunFlareComponent = m_LightTransform.GetComponent<LensFlareComponentSRP>();
+            m_lightComponent = m_lightTransform.GetComponent<Light>();
+            m_sunFlareComponent = m_lightTransform.GetComponent<LensFlareComponentSRP>();
 
-            m_Data.UpdateSkySettings();
+            m_data.UpdateSkySettings();
 
             Refresh();
             
-            if (m_EnableReflection)
+            if (m_enableReflection)
             {
                 if ((SystemInfo.copyTextureSupport & CopyTextureSupport.RTToTexture) == 0)
                 {
-                    m_EnableReflection = false;
+                    m_enableReflection = false;
                     Debug.Log("[Skybox] Reflection Disable -> Copy RT Not Allowed");
                 }
                 else
@@ -109,57 +108,57 @@ namespace Environment.System
 
         public void Refresh()
         {
-            m_curveTime = (m_Data.setTimeByCurve) ? m_Data.dayLengthCurve.Evaluate(m_Time.time) : m_Time.time;
+            m_curveTime = m_data.setTimeByCurve ? m_data.dayLengthCurve.Evaluate(m_time.time) : m_time.time;
             m_gradientTime = m_curveTime / 24f;
 
             // Scattering
-            Shader.SetGlobalVector(ShaderIDs.Br, m_Br * m_Data.rayleighCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalVector(ShaderIDs.Bm, m_Bm * m_Data.mieCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.Kr, m_Data.krCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.Km, m_Data.kmCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.Scattering, m_Data.scatteringCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.SunIntensity, m_Data.sunIntensityCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.NightIntensity, m_Data.nightIntensityCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.Exposure, m_Data.exposureCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalColor(ShaderIDs.RayleighColor, m_Data.rayleighGradientColor.Evaluate(m_gradientTime));
-            Shader.SetGlobalColor(ShaderIDs.MieColor, m_Data.mieGradientColor.Evaluate(m_gradientTime));
-            Shader.SetGlobalVector(ShaderIDs.MieG, m_MieG);
+            Shader.SetGlobalVector(ShaderIDs.Br, m_br * m_data.rayleighCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalVector(ShaderIDs.Bm, m_bm * m_data.mieCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.Kr, m_data.krCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.Km, m_data.kmCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.Scattering, m_data.scatteringCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.SunIntensity, m_data.sunIntensityCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.NightIntensity, m_data.nightIntensityCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.Exposure, m_data.exposureCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalColor(ShaderIDs.RayleighColor, m_data.rayleighGradientColor.Evaluate(m_gradientTime));
+            Shader.SetGlobalColor(ShaderIDs.MieColor, m_data.mieGradientColor.Evaluate(m_gradientTime));
+            Shader.SetGlobalVector(ShaderIDs.MieG, m_mieG);
 
             // Night sky
-            Shader.SetGlobalColor(ShaderIDs.MoonDiskColor, m_Data.moonDiskGradientColor.Evaluate(m_gradientTime));
-            Shader.SetGlobalColor(ShaderIDs.MoonBrightColor, m_Data.moonBrightGradientColor.Evaluate(m_gradientTime));
-            Shader.SetGlobalFloat(ShaderIDs.MoonBrightRange, Mathf.Lerp(150.0f, 5.0f, m_Data.moonBrightRangeCurve.Evaluate(m_curveTime)));
-            Shader.SetGlobalFloat(ShaderIDs.StarfieldIntensity, m_Data.starfieldIntensityCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.MilkyWayIntensity, m_Data.milkyWayIntensityCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalVector(ShaderIDs.StarfieldColorBalance, m_Data.starfieldColorBalance);
+            Shader.SetGlobalColor(ShaderIDs.MoonDiskColor, m_data.moonDiskGradientColor.Evaluate(m_gradientTime));
+            Shader.SetGlobalColor(ShaderIDs.MoonBrightColor, m_data.moonBrightGradientColor.Evaluate(m_gradientTime));
+            Shader.SetGlobalFloat(ShaderIDs.MoonBrightRange, Mathf.Lerp(150.0f, 5.0f, m_data.moonBrightRangeCurve.Evaluate(m_curveTime)));
+            Shader.SetGlobalFloat(ShaderIDs.StarfieldIntensity, m_data.starfieldIntensityCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.MilkyWayIntensity, m_data.milkyWayIntensityCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalVector(ShaderIDs.StarfieldColorBalance, m_data.starfieldColorBalance);
 
             // Clouds
-            Shader.SetGlobalColor(ShaderIDs.CloudColor, m_Data.cloudGradientColor.Evaluate(m_gradientTime));
-            Shader.SetGlobalFloat(ShaderIDs.CloudScattering, m_Data.cloudScatteringCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.CloudExtinction, m_Data.cloudExtinctionCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.CloudPower, m_Data.cloudPowerCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.CloudIntensity, m_Data.cloudIntensityCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalColor(ShaderIDs.CloudColor, m_data.cloudGradientColor.Evaluate(m_gradientTime));
+            Shader.SetGlobalFloat(ShaderIDs.CloudScattering, m_data.cloudScatteringCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.CloudExtinction, m_data.cloudExtinctionCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.CloudPower, m_data.cloudPowerCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.CloudIntensity, m_data.cloudIntensityCurve.Evaluate(m_curveTime));
 
             // Fog scattering
-            Shader.SetGlobalFloat(ShaderIDs.FogDistance, m_Data.fogDistanceCurve.Evaluate(m_curveTime));
-            Shader.SetGlobalFloat(ShaderIDs.FogBlend, m_Data.fogBlend);
-            Shader.SetGlobalFloat(ShaderIDs.MieDistance, m_Data.mieDistance);
+            Shader.SetGlobalFloat(ShaderIDs.FogDistance, m_data.fogDistanceCurve.Evaluate(m_curveTime));
+            Shader.SetGlobalFloat(ShaderIDs.FogBlend, m_data.fogBlend);
+            Shader.SetGlobalFloat(ShaderIDs.MieDistance, m_data.mieDistance);
 
             // Options
-            Shader.SetGlobalFloat(ShaderIDs.SunDiskSize, Mathf.Lerp(5.0f, 1.0f, m_Data.sunDiskSize));
-            Shader.SetGlobalFloat(ShaderIDs.MoonDiskSize, Mathf.Lerp(20.0f, 1.0f, m_Data.moonDiskSize));
+            Shader.SetGlobalFloat(ShaderIDs.SunDiskSize, Mathf.Lerp(5.0f, 1.0f, m_data.sunDiskSize));
+            Shader.SetGlobalFloat(ShaderIDs.MoonDiskSize, Mathf.Lerp(20.0f, 1.0f, m_data.moonDiskSize));
 
             AnimateSky();
             
-            if (m_EnableReflection)
+            if (m_enableReflection)
                 UpdateEnvironmentReflection();
         }
 
         private void AnimateSky()
         {
-            if (m_Data.cloudRotationSpeed != 0f)
+            if (m_data.cloudRotationSpeed != 0f)
             {
-                m_cloudRotationSpeed += m_Data.cloudRotationSpeed * Time.deltaTime;
+                m_cloudRotationSpeed += m_data.cloudRotationSpeed * Time.deltaTime;
                 if (m_cloudRotationSpeed >= 1f)
                     m_cloudRotationSpeed = 0f;
             }
@@ -167,54 +166,54 @@ namespace Environment.System
             Shader.SetGlobalFloat(ShaderIDs.CloudRotationSpeed, m_cloudRotationSpeed);
             
             // Directions
-            var sunLocalDirection = m_HolderTransform.InverseTransformDirection(m_SunTransform.transform.forward);
-            var moonLocalDirection = m_HolderTransform.InverseTransformDirection(m_MoonTransform.transform.forward);
+            var sunLocalDirection = m_holderTransform.InverseTransformDirection(m_sunTransform.transform.forward);
+            var moonLocalDirection = m_holderTransform.InverseTransformDirection(m_moonTransform.transform.forward);
             Shader.SetGlobalVector(ShaderIDs.SunDirection, -sunLocalDirection);
             Shader.SetGlobalVector(ShaderIDs.MoonDirection, -moonLocalDirection);
 
             // Matrix
-            Shader.SetGlobalMatrix(ShaderIDs.SkyUpDirectionMatrix, m_HolderTransform.worldToLocalMatrix);
-            Shader.SetGlobalMatrix(ShaderIDs.SunMatrix, m_SunTransform.transform.worldToLocalMatrix);
-            Shader.SetGlobalMatrix(ShaderIDs.MoonMatrix, m_MoonTransform.transform.worldToLocalMatrix);
-            Shader.SetGlobalMatrix(ShaderIDs.StarfieldMatrix, Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(m_Data.starfieldPosition), Vector3.one).inverse);
+            Shader.SetGlobalMatrix(ShaderIDs.SkyUpDirectionMatrix, m_holderTransform.worldToLocalMatrix);
+            Shader.SetGlobalMatrix(ShaderIDs.SunMatrix, m_sunTransform.transform.worldToLocalMatrix);
+            Shader.SetGlobalMatrix(ShaderIDs.MoonMatrix, m_moonTransform.transform.worldToLocalMatrix);
+            Shader.SetGlobalMatrix(ShaderIDs.StarfieldMatrix, Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(m_data.starfieldPosition), Vector3.one).inverse);
 
-            m_SunTransform.transform.localRotation = Quaternion.Euler((m_curveTime * 360.0f / 24.0f) - 90.0f, 180.0f, 0.0f);
-            m_MoonTransform.transform.localRotation = Quaternion.LookRotation(-sunLocalDirection);
+            m_sunTransform.transform.localRotation = Quaternion.Euler((m_curveTime * 360.0f / 24.0f) - 90.0f, 180.0f, 0.0f);
+            m_moonTransform.transform.localRotation = Quaternion.LookRotation(-sunLocalDirection);
 
-            if (Vector3.Dot(-m_SunTransform.transform.forward, m_HolderTransform.up) >= 0.0f)
+            if (Vector3.Dot(-m_sunTransform.transform.forward, m_holderTransform.up) >= 0.0f)
             {
-                m_LightTransform.transform.localRotation = Quaternion.LookRotation(sunLocalDirection);
-                m_Data.onSunRise.Invoke();
+                m_lightTransform.transform.localRotation = Quaternion.LookRotation(sunLocalDirection);
+                m_data.onSunRise.Invoke();
             }
             else
             {
-                m_LightTransform.transform.localRotation = Quaternion.LookRotation(moonLocalDirection);
-                m_Data.onSunSet.Invoke();
+                m_lightTransform.transform.localRotation = Quaternion.LookRotation(moonLocalDirection);
+                m_data.onSunSet.Invoke();
             }
 
             // Lighting
-            m_lightComponent.intensity = m_Data.lightIntensityCurve.Evaluate(m_curveTime);
-            m_SunFlareComponent.intensity = m_Data.flareIntensityCurve.Evaluate(m_curveTime);
-            m_lightComponent.color = m_Data.lightGradientColor.Evaluate(m_gradientTime);
+            m_lightComponent.intensity = m_data.lightIntensityCurve.Evaluate(m_curveTime);
+            m_sunFlareComponent.intensity = m_data.flareIntensityCurve.Evaluate(m_curveTime);
+            m_lightComponent.color = m_data.lightGradientColor.Evaluate(m_gradientTime);
 
-            RenderSettings.ambientIntensity = m_Data.ambientIntensityCurve.Evaluate(m_curveTime);
+            RenderSettings.ambientIntensity = m_data.ambientIntensityCurve.Evaluate(m_curveTime);
         }
         
         private void UpdateEnvironmentReflection()
         {
-            if (EnvironmentProbe.texture == null && m_ProbeRenderId == -1)
+            if (EnvironmentProbe.texture == null && m_probeRenderId == -1)
             {
                 Debug.Log("[Skybox] Init RT");
-                m_ProbeRenderId = EnvironmentProbe.RenderProbe();
+                m_probeRenderId = EnvironmentProbe.RenderProbe();
             }
-            else if (EnvironmentProbe.texture != null || EnvironmentProbe.IsFinishedRendering(m_ProbeRenderId))
+            else if (EnvironmentProbe.texture != null || EnvironmentProbe.IsFinishedRendering(m_probeRenderId))
             {
-                if (Time.frameCount % m_Data.updateRate == 0)
+                if (Time.frameCount % m_data.updateRate == 0)
                 {
                     Graphics.CopyTexture(EnvironmentProbe.texture, EnvironmentReflection);
                     RenderSettings.customReflectionTexture = EnvironmentReflection;
                     RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
-                    m_ProbeRenderId = EnvironmentProbe.RenderProbe();
+                    m_probeRenderId = EnvironmentProbe.RenderProbe();
                     Debug.Log("[Skybox] RT Update");   
                 }
             }

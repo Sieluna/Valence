@@ -8,76 +8,76 @@ namespace Environment
 {
     public class Chunk : MonoBehaviour
     {
-        private int3 chunkPosition;
-        private int3 chunkSize;
+        private int3 m_chunkPosition;
+        private int3 m_chunkSize;
 
-        private bool initialized;
-        private bool dirty;
-        private bool argent;
-        private Block[] blocks;
-        private Coroutine meshUpdater;
+        private bool m_initialized;
+        private bool m_dirty;
+        private bool m_argent;
+        private Block[] m_blocks;
+        private Coroutine m_meshUpdater;
 
         // Mesh
-        private Mesh mesh;
-        private Mesh colmesh;
+        private Mesh m_mesh;
+        private Mesh m_colMesh;
         
-        private MeshFilter meshFilter;
-        private MeshRenderer meshRenderer;
-        private MeshCollider meshCollider;
+        private MeshFilter m_meshFilter;
+        private MeshRenderer m_meshRenderer;
+        private MeshCollider m_meshCollider;
 
         public event Func<bool> OnChunkUpdate;
         
-        private NativeMapData blockData;
-        private NativeMeshData meshData;
+        private NativeMapData m_blockData;
+        private NativeMeshData m_meshData;
 
-        public bool Dirty => dirty;
-        public bool Updating => meshUpdater != null;
-        public bool Initialized => initialized;
-        public Block[] Blocks => blocks;
+        public bool Dirty => m_dirty;
+        public bool Updating => m_meshUpdater != null;
+        public bool Initialized => m_initialized;
+        public Block[] Blocks => m_blocks;
 
         private void Awake()
         {
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            meshCollider = gameObject.AddComponent<MeshCollider>();
-            mesh = new Mesh();
-            colmesh = new Mesh();
+            m_meshFilter = gameObject.AddComponent<MeshFilter>();
+            m_meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            m_meshCollider = gameObject.AddComponent<MeshCollider>();
+            m_mesh = new Mesh();
+            m_colMesh = new Mesh();
             OnChunkUpdate = () => true;
         }
 
         private void OnDestroy()
         {
-            blockData?.jobHandle.Complete(); blockData?.Dispose();
-            meshData?.jobHandle.Complete(); meshData?.Dispose();
+            m_blockData?.jobHandle.Complete(); m_blockData?.Dispose();
+            m_meshData?.jobHandle.Complete(); m_meshData?.Dispose();
         }
 
         private void Start()
         {
-            meshFilter.mesh = mesh;
+            m_meshFilter.mesh = m_mesh;
         }
 
         public void InitChunk(int3 position, Material[] materials, int3 size)
         {
-            chunkPosition = position;
-            meshRenderer.materials = materials;
-            chunkSize = size;
+            m_chunkPosition = position;
+            m_meshRenderer.materials = materials;
+            m_chunkSize = size;
 
             StartCoroutine(InitUpdater());
         }
 
         private IEnumerator InitUpdater()
         {
-            blocks = new Block[chunkSize.x * chunkSize.y * chunkSize.z];
-            blockData = new NativeMapData(chunkSize);
-            yield return blockData.Generate(blocks, chunkPosition, chunkSize);
-            dirty = true;
-            initialized = true;
+            m_blocks = new Block[m_chunkSize.x * m_chunkSize.y * m_chunkSize.z];
+            m_blockData = new NativeMapData(m_chunkSize);
+            yield return m_blockData.Generate(m_blocks, m_chunkPosition, m_chunkSize);
+            m_dirty = true;
+            m_initialized = true;
         }
 
         private void Update()
         {
-            if (initialized && !Updating && dirty && OnChunkUpdate != null && OnChunkUpdate())
-                meshUpdater = StartCoroutine(UpdateMesh());
+            if (m_initialized && !Updating && m_dirty && OnChunkUpdate != null && OnChunkUpdate())
+                m_meshUpdater = StartCoroutine(UpdateMesh());
         }
 
         private IEnumerator UpdateMesh()
@@ -86,72 +86,72 @@ namespace Environment
 
             World.Instance.UpdatingChunks++;
             
-            meshData?.Dispose();
-            meshData = new NativeMeshData(chunkSize);
-            yield return meshData.Generate(blocks, chunkSize, argent);
+            m_meshData?.Dispose();
+            m_meshData = new NativeMeshData(m_chunkSize);
+            yield return m_meshData.Generate(m_blocks, m_chunkSize, m_argent);
 
-            meshData.GetMeshInformation(out int verticesSize);
+            m_meshData.GetMeshInformation(out int verticesSize);
 
             if (verticesSize > 0)
             {
-                mesh.Clear();
-                colmesh.Clear();
-                mesh.subMeshCount = 4;
-                mesh.SetVertices(meshData.nativeVertices, 0, verticesSize);
-                mesh.SetNormals(meshData.nativeNormals, 0, verticesSize);
-                mesh.SetColors(meshData.nativeColors, 0, verticesSize);
-                mesh.SetUVs(0, meshData.nativeUVs, 0, verticesSize);
-                mesh.SetIndices(meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
-                mesh.SetIndices(meshData.nativeLiquidIndices.AsArray(), MeshTopology.Triangles, 1);
-                mesh.SetIndices(meshData.nativeFoliageIndices.AsArray(), MeshTopology.Triangles, 2);
-                mesh.SetIndices(meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 3);
-                colmesh.subMeshCount = 2;
-                colmesh.SetVertices(meshData.nativeVertices, 0, verticesSize);
-                colmesh.SetIndices(meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
-                colmesh.SetIndices(meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 1);
+                m_mesh.Clear();
+                m_colMesh.Clear();
+                m_mesh.subMeshCount = 4;
+                m_mesh.SetVertices(m_meshData.nativeVertices, 0, verticesSize);
+                m_mesh.SetNormals(m_meshData.nativeNormals, 0, verticesSize);
+                m_mesh.SetColors(m_meshData.nativeColors, 0, verticesSize);
+                m_mesh.SetUVs(0, m_meshData.nativeUVs, 0, verticesSize);
+                m_mesh.SetIndices(m_meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
+                m_mesh.SetIndices(m_meshData.nativeLiquidIndices.AsArray(), MeshTopology.Triangles, 1);
+                m_mesh.SetIndices(m_meshData.nativeFoliageIndices.AsArray(), MeshTopology.Triangles, 2);
+                m_mesh.SetIndices(m_meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 3);
+                m_colMesh.subMeshCount = 2;
+                m_colMesh.SetVertices(m_meshData.nativeVertices, 0, verticesSize);
+                m_colMesh.SetIndices(m_meshData.nativeBlockIndices.AsArray(), MeshTopology.Triangles, 0);
+                m_colMesh.SetIndices(m_meshData.nativeTransparentIndices.AsArray(), MeshTopology.Triangles, 1);
                 
-                mesh.RecalculateNormals();
-                mesh.RecalculateBounds();
+                m_mesh.RecalculateNormals();
+                m_mesh.RecalculateBounds();
 
-                if (argent)
-                    SetSharedMesh(colmesh);
+                if (m_argent)
+                    SetSharedMesh(m_colMesh);
                 else
-                    NativeColliderData.Instance.Enqueue(this, colmesh);
+                    NativeColliderData.Instance.Enqueue(this, m_colMesh);
             }
 
-            meshData.Dispose();
-            dirty = false;
-            argent = false;
+            m_meshData.Dispose();
+            m_dirty = false;
+            m_argent = false;
             gameObject.layer = LayerMask.NameToLayer("Block");
-            meshUpdater = null;
+            m_meshUpdater = null;
 
             World.Instance.UpdatingChunks--;
         }
 
-        public void SetSharedMesh(Mesh bakedMesh) => meshCollider.sharedMesh = bakedMesh;
+        public void SetSharedMesh(Mesh bakedMesh) => m_meshCollider.sharedMesh = bakedMesh;
 
         public bool GetBlock(int3 gridPosition, out Block block)
         {
-            if (!initialized) { block = Block.Empty; return false; }
-            if (!gridPosition.BoundaryCheck(chunkSize)) { block = Block.Empty; return false; }
+            if (!m_initialized) { block = Block.Empty; return false; }
+            if (!gridPosition.BoundaryCheck(m_chunkSize)) { block = Block.Empty; return false; }
             
-            block = blocks[gridPosition.To1DIndex(chunkSize)];
+            block = m_blocks[gridPosition.To1DIndex(m_chunkSize)];
             return true;
         }
 
         public bool SetBlock(int3 gridPosition, BlockType type)
         {
-            if (!initialized) return false;
-            if (!gridPosition.BoundaryCheck(chunkSize)) return false;
+            if (!m_initialized) return false;
+            if (!gridPosition.BoundaryCheck(m_chunkSize)) return false;
 
             if (type == BlockType.Air && GetBlock(gridPosition + new int3(0, 1, 0), out Block block) && block.type == BlockType.Grass)
-                blocks[(gridPosition + new int3(0, 1, 0)).To1DIndex(chunkSize)].type = BlockType.Air;
+                m_blocks[(gridPosition + new int3(0, 1, 0)).To1DIndex(m_chunkSize)].type = BlockType.Air;
             
-            blocks[gridPosition.To1DIndex(chunkSize)].type = type;
-            dirty = argent = true;
+            m_blocks[gridPosition.To1DIndex(m_chunkSize)].type = type;
+            m_dirty = m_argent = true;
             return true;
         }
 
-        public void NeighborChunkIsChanged() => dirty = argent = true;
+        public void NeighborChunkIsChanged() => m_dirty = m_argent = true;
     }
 }

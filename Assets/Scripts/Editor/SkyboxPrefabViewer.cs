@@ -1,20 +1,19 @@
 using Environment.Data;
 using UnityEditor;
 using UnityEngine;
-// ReSharper disable InconsistentNaming
 
 [CustomEditor(typeof(SkyboxPrefab))]
 public class SkyboxPrefabViewer : Editor
 {
-    private SkyboxPrefab m_Prefab;
+    private SkyboxPrefab m_prefab;
 
-    private Vector3 m_StarFieldColor = Vector3.one;
-    private Vector3 m_StarFieldPosition = Vector3.zero;
+    private Vector3 m_starFieldColor = Vector3.one;
+    private Vector3 m_starFieldPosition = Vector3.zero;
 
-    private readonly GUIContent[] m_ResolutionName = {new("16"), new("32"), new("64"), new("128"), new("256"), new("512"), new("1024"), new("2048")};
-    private readonly int[] m_Resolution = {16, 32, 64, 128, 256, 512, 1024, 2048};
+    private readonly GUIContent[] m_resolutionName = { new("16"), new("32"), new("64"), new("128"), new("256"), new("512"), new("1024"), new("2048") };
+    private readonly int[] m_resolution = {16, 32, 64, 128, 256, 512, 1024, 2048};
 
-    private void OnEnable() => m_Prefab = target as SkyboxPrefab;
+    private void OnEnable() => m_prefab = target as SkyboxPrefab;
 
     public override void OnInspectorGUI()
     {
@@ -81,13 +80,13 @@ public class SkyboxPrefabViewer : Editor
         EditorGUILayout.CurveField(serializedObject.FindProperty("starfieldIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 10.0f), new GUIContent("Starfield Intensity"));
         EditorGUILayout.CurveField(serializedObject.FindProperty("milkyWayIntensityCurve"), Color.green, new Rect(0.0f, 0.0f, 24.0f, 1.0f), new GUIContent("Milky Way Intensity"));
 
-        m_StarFieldColor.x = EditorGUILayout.Slider("Starfield Color R", m_Prefab.starfieldColorBalance.x, 1.0f, 2.0f);
-        m_StarFieldColor.y = EditorGUILayout.Slider("Starfield Color G", m_Prefab.starfieldColorBalance.y, 1.0f, 2.0f);
-        m_StarFieldColor.z = EditorGUILayout.Slider("Starfield Color B", m_Prefab.starfieldColorBalance.z, 1.0f, 2.0f);
+        m_starFieldColor.x = EditorGUILayout.Slider("Starfield Color R", m_prefab.starfieldColorBalance.x, 1.0f, 2.0f);
+        m_starFieldColor.y = EditorGUILayout.Slider("Starfield Color G", m_prefab.starfieldColorBalance.y, 1.0f, 2.0f);
+        m_starFieldColor.z = EditorGUILayout.Slider("Starfield Color B", m_prefab.starfieldColorBalance.z, 1.0f, 2.0f);
 
-        m_StarFieldPosition.x = EditorGUILayout.Slider("Starfield Position X", m_Prefab.starfieldPosition.x, 0.0f, 360.0f);
-        m_StarFieldPosition.y = EditorGUILayout.Slider("Starfield Position Y", m_Prefab.starfieldPosition.y, 0.0f, 360.0f);
-        m_StarFieldPosition.z = EditorGUILayout.Slider("Starfield Position Z", m_Prefab.starfieldPosition.z, 0.0f, 360.0f);
+        m_starFieldPosition.x = EditorGUILayout.Slider("Starfield Position X", m_prefab.starfieldPosition.x, 0.0f, 360.0f);
+        m_starFieldPosition.y = EditorGUILayout.Slider("Starfield Position Y", m_prefab.starfieldPosition.y, 0.0f, 360.0f);
+        m_starFieldPosition.z = EditorGUILayout.Slider("Starfield Position Z", m_prefab.starfieldPosition.z, 0.0f, 360.0f);
 
         // Clouds
         EditorGUILayout.Space(2);
@@ -136,7 +135,7 @@ public class SkyboxPrefabViewer : Editor
         EditorGUILayout.Space(2);
 
         EditorGUILayout.PropertyField(serializedObject.FindProperty("enableReflection"));
-        EditorGUILayout.IntPopup(serializedObject.FindProperty("environmentReflectionResolution"), m_ResolutionName, m_Resolution);
+        EditorGUILayout.IntPopup(serializedObject.FindProperty("environmentReflectionResolution"), m_resolutionName, m_resolution);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("environmentReflectionTimeSlicingMode"), new GUIContent("Time Slicing"));
         EditorGUILayout.IntSlider(serializedObject.FindProperty("updateRate"), 1, 255);
 
@@ -151,10 +150,10 @@ public class SkyboxPrefabViewer : Editor
         // End custom Inspector
         if (EditorGUI.EndChangeCheck())
         {
-            Undo.RecordObject(m_Prefab, "Undo Skybox Setup");
+            Undo.RecordObject(m_prefab, "Undo Skybox Setup");
             serializedObject.ApplyModifiedProperties();
-            m_Prefab.starfieldColorBalance = m_StarFieldColor;
-            m_Prefab.starfieldPosition = m_StarFieldPosition;
+            m_prefab.starfieldColorBalance = m_starFieldColor;
+            m_prefab.starfieldPosition = m_starFieldPosition;
         }
     }
 }

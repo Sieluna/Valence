@@ -46,15 +46,15 @@ namespace Environment.System
 
         }
 
-        private readonly ISharedSystem[] m_Systems = 
+        private readonly ISharedSystem[] m_systems = 
         {
             new BuildBlockSystem(),
             new BuildTimeSystem(),
             new BuildSkyboxSystem()
         };
 
-        public void Init() => Array.ForEach(m_Systems, system => system.Init());
+        public void Init() => Array.ForEach(m_systems, system => system.Init());
 
-        public void Refresh() => Array.ForEach(m_Systems, system => system.Refresh());
+        public void Refresh() => Array.ForEach(m_systems, system => system.Refresh());
     }
 }

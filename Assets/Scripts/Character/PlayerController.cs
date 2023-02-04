@@ -9,69 +9,69 @@
 public class PlayerController : MonoBehaviour
 {
     [Tooltip("How fast the player moves when walking (default move speed).")]
-    [SerializeField] private float m_WalkSpeed = 6.0f;
+    [SerializeField] private float walkSpeed = 6.0f;
 
     [Tooltip("How fast the player moves when running.")]
-    [SerializeField] private float m_RunSpeed = 11.0f;
+    [SerializeField] private float runSpeed = 11.0f;
 
     [Tooltip("If true, diagonal speed (when strafing + moving forward or back) can't exceed normal move speed; otherwise it's about 1.4 times faster.")]
-    [SerializeField] public bool m_LimitDiagonalSpeed = true;
+    [SerializeField] public bool limitDiagonalSpeed = true;
 
     [Tooltip("If checked, the run key toggles between running and walking. Otherwise player runs if the key is held down.")]
-    [SerializeField] private bool m_ToggleRun = false;
+    [SerializeField] private bool toggleRun = false;
 
     [Tooltip("How high the player jumps when hitting the jump button.")]
-    [SerializeField] private float m_JumpSpeed = 8.0f;
+    [SerializeField] private float jumpSpeed = 8.0f;
 
     [Tooltip("How fast the player falls when not standing on anything.")]
-    [SerializeField] private float m_Gravity = 20.0f;
+    [SerializeField] private float gravity = 20.0f;
 
     [Tooltip("Units that player can fall before a falling function is run. To disable, type \"infinity\" in the inspector.")]
-    [SerializeField] private float m_FallingThreshold = 10.0f;
+    [SerializeField] private float fallingThreshold = 10.0f;
 
     [Tooltip("If the player ends up on a slope which is at least the Slope Limit as set on the character controller, then he will slide down.")]
-    [SerializeField] private bool m_SlideWhenOverSlopeLimit = false;
+    [SerializeField] private bool slideWhenOverSlopeLimit = false;
 
     [Tooltip("If checked and the player is on an object tagged \"Slide\", he will slide down it regardless of the slope limit.")]
-    [SerializeField] private bool m_SlideOnTaggedObjects = false;
+    [SerializeField] private bool slideOnTaggedObjects = false;
 
     [Tooltip("How fast the player slides when on slopes as defined above.")]
-    [SerializeField] private float m_SlideSpeed = 12.0f;
+    [SerializeField] private float slideSpeed = 12.0f;
 
     [Tooltip("If checked, then the player can change direction while in the air.")]
-    [SerializeField] private bool m_AirControl = false;
+    [SerializeField] private bool airControl = false;
 
     [Tooltip("Small amounts of this results in bumping when walking down slopes, but large amounts results in falling too fast.")]
-    [SerializeField] private float m_AntiBumpFactor = .75f;
+    [SerializeField] private float antiBumpFactor = .75f;
 
     [Tooltip("Player must be grounded for at least this many physics frames before being able to jump again; set to 0 to allow bunny hopping.")]
-    [SerializeField] private int m_AntiBunnyHopFactor = 1;
+    [SerializeField] private int antiBunnyHopFactor = 1;
 
-    private Vector3 m_MoveDirection = Vector3.zero;
-    private bool m_Grounded = false;
-    private CharacterController m_Controller;
-    private Transform m_Transform;
-    private float m_Speed;
-    private RaycastHit m_Hit;
-    private float m_FallStartLevel;
-    private bool m_Falling;
-    private float m_SlideLimit;
-    private float m_RayDistance;
-    private Vector3 m_ContactPoint;
-    private bool m_PlayerControl = false;
-    private int m_JumpTimer;
+    private Vector3 m_moveDirection = Vector3.zero;
+    private bool m_grounded = false;
+    private CharacterController m_controller;
+    private Transform m_transform;
+    private float m_speed;
+    private RaycastHit m_hit;
+    private float m_fallStartLevel;
+    private bool m_falling;
+    private float m_slideLimit;
+    private float m_rayDistance;
+    private Vector3 m_contactPoint;
+    private bool m_playerControl = false;
+    private int m_jumpTimer;
 
     private void Start()
     {
         // Saving component references to improve performance.
-        m_Transform = GetComponent<Transform>();
-        m_Controller = GetComponent<CharacterController>();
+        m_transform = GetComponent<Transform>();
+        m_controller = GetComponent<CharacterController>();
 
         // Setting initial values.
-        m_Speed = m_WalkSpeed;
-        m_RayDistance = m_Controller.height * .5f + m_Controller.radius;
-        m_SlideLimit = m_Controller.slopeLimit - .1f;
-        m_JumpTimer = m_AntiBunnyHopFactor;
+        m_speed = walkSpeed;
+        m_rayDistance = m_controller.height * .5f + m_controller.radius;
+        m_slideLimit = m_controller.slopeLimit - .1f;
+        m_jumpTimer = antiBunnyHopFactor;
     }
 
 
@@ -83,22 +83,22 @@ public class PlayerController : MonoBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
 
-        if (m_ToggleRun && m_Grounded && Input.GetButtonDown("Run"))
+        if (toggleRun && m_grounded && Input.GetButtonDown("Run"))
         {
-            m_Speed = (m_Speed == m_WalkSpeed ? m_RunSpeed : m_WalkSpeed);
+            m_speed = (m_speed == walkSpeed ? runSpeed : walkSpeed);
         }
 
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
-        float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && m_LimitDiagonalSpeed) ? .7071f : 1.0f;
+        float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
 
-        if (m_Grounded)
+        if (m_grounded)
         {
             bool sliding = false;
             // See if surface immediately below should be slid down. We use this normally rather than a ControllerColliderHit point,
             // because that interferes with step climbing amongst other annoyances
-            if (Physics.Raycast(m_Transform.position, -Vector3.up, out m_Hit, m_RayDistance))
+            if (Physics.Raycast(m_transform.position, -Vector3.up, out m_hit, m_rayDistance))
             {
-                if (Vector3.Angle(m_Hit.normal, Vector3.up) > m_SlideLimit)
+                if (Vector3.Angle(m_hit.normal, Vector3.up) > m_slideLimit)
                 {
                     sliding = true;
                 }
@@ -107,87 +107,87 @@ public class PlayerController : MonoBehaviour
             // So if the above raycast didn't catch anything, raycast down from the stored ControllerColliderHit point instead
             else
             {
-                Physics.Raycast(m_ContactPoint + Vector3.up, -Vector3.up, out m_Hit);
-                if (Vector3.Angle(m_Hit.normal, Vector3.up) > m_SlideLimit)
+                Physics.Raycast(m_contactPoint + Vector3.up, -Vector3.up, out m_hit);
+                if (Vector3.Angle(m_hit.normal, Vector3.up) > m_slideLimit)
                 {
                     sliding = true;
                 }
             }
 
             // If we were falling, and we fell a vertical distance greater than the threshold, run a falling damage routine
-            if (m_Falling)
+            if (m_falling)
             {
-                m_Falling = false;
-                if (m_Transform.position.y < m_FallStartLevel - m_FallingThreshold)
+                m_falling = false;
+                if (m_transform.position.y < m_fallStartLevel - fallingThreshold)
                 {
-                    OnFell(m_FallStartLevel - m_Transform.position.y);
+                    OnFell(m_fallStartLevel - m_transform.position.y);
                 }
             }
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
-            if (!m_ToggleRun)
+            if (!toggleRun)
             {
-                m_Speed = Input.GetKey(KeyCode.LeftShift) ? m_RunSpeed : m_WalkSpeed;
+                m_speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
             }
 
             // If sliding (and it's allowed), or if we're on an object tagged "Slide", get a vector pointing down the slope we're on
-            if ((sliding && m_SlideWhenOverSlopeLimit) || (m_SlideOnTaggedObjects && m_Hit.collider.tag == "Slide"))
+            if ((sliding && slideWhenOverSlopeLimit) || (slideOnTaggedObjects && m_hit.collider.tag == "Slide"))
             {
-                Vector3 hitNormal = m_Hit.normal;
-                m_MoveDirection = new Vector3(hitNormal.x, -hitNormal.y, hitNormal.z);
-                Vector3.OrthoNormalize(ref hitNormal, ref m_MoveDirection);
-                m_MoveDirection *= m_SlideSpeed;
-                m_PlayerControl = false;
+                Vector3 hitNormal = m_hit.normal;
+                m_moveDirection = new Vector3(hitNormal.x, -hitNormal.y, hitNormal.z);
+                Vector3.OrthoNormalize(ref hitNormal, ref m_moveDirection);
+                m_moveDirection *= slideSpeed;
+                m_playerControl = false;
             }
             // Otherwise recalculate moveDirection directly from axes, adding a bit of -y to avoid bumping down inclines
             else
             {
-                m_MoveDirection = new Vector3(inputX * inputModifyFactor, -m_AntiBumpFactor, inputY * inputModifyFactor);
-                m_MoveDirection = m_Transform.TransformDirection(m_MoveDirection) * m_Speed;
-                m_PlayerControl = true;
+                m_moveDirection = new Vector3(inputX * inputModifyFactor, -antiBumpFactor, inputY * inputModifyFactor);
+                m_moveDirection = m_transform.TransformDirection(m_moveDirection) * m_speed;
+                m_playerControl = true;
             }
 
             // Jump! But only if the jump button has been released and player has been grounded for a given number of frames
             if (!Input.GetButton("Jump"))
             {
-                m_JumpTimer++;
+                m_jumpTimer++;
             }
-            else if (m_JumpTimer >= m_AntiBunnyHopFactor)
+            else if (m_jumpTimer >= antiBunnyHopFactor)
             {
-                m_MoveDirection.y = m_JumpSpeed;
-                m_JumpTimer = 0;
+                m_moveDirection.y = jumpSpeed;
+                m_jumpTimer = 0;
             }
         }
         else
         {
             // If we stepped over a cliff or something, set the height at which we started falling
-            if (!m_Falling)
+            if (!m_falling)
             {
-                m_Falling = true;
-                m_FallStartLevel = m_Transform.position.y;
+                m_falling = true;
+                m_fallStartLevel = m_transform.position.y;
             }
 
             // If air control is allowed, check movement but don't touch the y component
-            if (m_AirControl && m_PlayerControl)
+            if (airControl && m_playerControl)
             {
-                m_MoveDirection.x = inputX * m_Speed * inputModifyFactor;
-                m_MoveDirection.z = inputY * m_Speed * inputModifyFactor;
-                m_MoveDirection = m_Transform.TransformDirection(m_MoveDirection);
+                m_moveDirection.x = inputX * m_speed * inputModifyFactor;
+                m_moveDirection.z = inputY * m_speed * inputModifyFactor;
+                m_moveDirection = m_transform.TransformDirection(m_moveDirection);
             }
         }
 
         // Apply gravity
-        m_MoveDirection.y -= m_Gravity * Time.deltaTime;
+        m_moveDirection.y -= gravity * Time.deltaTime;
 
         // Move the controller, and set grounded true or false depending on whether we're standing on something
-        m_Grounded = (m_Controller.Move(m_MoveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
+        m_grounded = (m_controller.Move(m_moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
     }
 
 
     // Store point that we're in contact with for use in FixedUpdate if needed
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        m_ContactPoint = hit.point;
+        m_contactPoint = hit.point;
     }
 
 

@@ -4,16 +4,15 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-// ReSharper disable InconsistentNaming
 
 namespace Environment.Data
 {
     public class NativeMapData
     {
-        private NativeArray<Block> m_NativeBlocks;
+        private NativeArray<Block> m_nativeBlocks;
         public JobHandle jobHandle;
 
-        public NativeMapData(int3 chunkSize) => m_NativeBlocks = new NativeArray<Block>(chunkSize.x * chunkSize.y * chunkSize.z, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+        public NativeMapData(int3 chunkSize) => m_nativeBlocks = new NativeArray<Block>(chunkSize.x * chunkSize.y * chunkSize.z, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
 
         ~NativeMapData()
         {
@@ -22,7 +21,7 @@ namespace Environment.Data
 
         public void Dispose()
         {
-            if (m_NativeBlocks.IsCreated) m_NativeBlocks.Dispose();
+            if (m_nativeBlocks.IsCreated) m_nativeBlocks.Dispose();
         }
 
         public IEnumerator Generate(Block[] blocks, int3 chunkPosition, int3 chunkSize)
@@ -34,22 +33,22 @@ namespace Environment.Data
                 chunkPosition = chunkPosition,
                 chunkSize = chunkSize,
                 maxHeight = maxHeight,
-                blocks = m_NativeBlocks,
-            }.Schedule(m_NativeBlocks.Length, 32);
+                blocks = m_nativeBlocks,
+            }.Schedule(m_nativeBlocks.Length, 32);
 
             var mineJobHandle = new BuildMineSystem
             {
                 chunkPosition = chunkPosition,
                 chunkSize = chunkSize,
-                blocks = m_NativeBlocks,
-            }.Schedule(m_NativeBlocks.Length, 32, baseJobHandle);
+                blocks = m_nativeBlocks,
+            }.Schedule(m_nativeBlocks.Length, 32, baseJobHandle);
 
             jobHandle = new BuildFoliageSystem
             {
                 chunkPosition = chunkPosition,
                 chunkSize = chunkSize,
-                blocks = m_NativeBlocks,
-            }.Schedule(m_NativeBlocks.Length, 32, mineJobHandle);
+                blocks = m_nativeBlocks,
+            }.Schedule(m_nativeBlocks.Length, 32, mineJobHandle);
             
             //jobHandle = new BuildBiomesSystem
             //{
@@ -58,7 +57,7 @@ namespace Environment.Data
             //    blocks = m_NativeBlocks,
             //}.Schedule(m_NativeBlocks.Length, 32);
             
-            int frameCount = 1;
+            var frameCount = 1;
             yield return new WaitUntil(() =>
             {
                 frameCount++;
@@ -66,8 +65,8 @@ namespace Environment.Data
             });
             
             jobHandle.Complete();
-            m_NativeBlocks.CopyTo(blocks);
-            m_NativeBlocks.Dispose();
+            m_nativeBlocks.CopyTo(blocks);
+            m_nativeBlocks.Dispose();
         }
     }
 }

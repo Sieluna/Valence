@@ -1,21 +1,17 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Environment.System;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using Utilities;
-// ReSharper disable InconsistentNaming
 
 namespace Environment.Data
 {
     public class NativeMeshData
     {
-        private NativeArray<Block> m_NativeBlocks;
-        private NativeCounter m_NativeCounter;
+        private NativeArray<Block> m_nativeBlocks;
+        private NativeCounter m_nativeCounter;
         
         public NativeArray<float3> nativeVertices;
         public NativeArray<float3> nativeNormals;
@@ -32,7 +28,7 @@ namespace Environment.Data
             var numBlocks = chunkSize.x * chunkSize.y * chunkSize.z;
             var numLayer = chunkSize.x * chunkSize.z;
 
-            m_NativeBlocks = new NativeArray<Block>(numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            m_nativeBlocks = new NativeArray<Block>(numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             nativeVertices = new NativeArray<float3>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             nativeNormals = new NativeArray<float3>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             nativeUVs = new NativeArray<float4>(12 * numBlocks, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -41,7 +37,7 @@ namespace Environment.Data
             nativeLiquidIndices = new NativeList<int>(numLayer, Allocator.TempJob);
             nativeFoliageIndices = new NativeList<int>(numLayer, Allocator.TempJob);
             nativeTransparentIndices = new NativeList<int>(numLayer, Allocator.TempJob);
-            m_NativeCounter = new NativeCounter(Allocator.TempJob);
+            m_nativeCounter = new NativeCounter(Allocator.TempJob);
         }
 
         ~NativeMeshData()
@@ -51,7 +47,7 @@ namespace Environment.Data
 
         public void Dispose()
         {
-            if (m_NativeBlocks.IsCreated) m_NativeBlocks.Dispose();
+            if (m_nativeBlocks.IsCreated) m_nativeBlocks.Dispose();
             if (nativeVertices.IsCreated) nativeVertices.Dispose();
             if (nativeNormals.IsCreated) nativeNormals.Dispose();
             if (nativeUVs.IsCreated) nativeUVs.Dispose();
@@ -60,16 +56,16 @@ namespace Environment.Data
             if (nativeLiquidIndices.IsCreated) nativeLiquidIndices.Dispose();
             if (nativeFoliageIndices.IsCreated) nativeFoliageIndices.Dispose();
             if (nativeTransparentIndices.IsCreated) nativeTransparentIndices.Dispose();
-            if (m_NativeCounter.IsCreated) m_NativeCounter.Dispose();
+            if (m_nativeCounter.IsCreated) m_nativeCounter.Dispose();
         }
 
         public IEnumerator Generate(Block[] blocks, int3 chunkSize, bool argent = false)
         {
-            m_NativeBlocks.CopyFrom(blocks);
+            m_nativeBlocks.CopyFrom(blocks);
             
             jobHandle = new BuildMeshSystem
             {
-                blocks = m_NativeBlocks,
+                blocks = m_nativeBlocks,
                 chunkSize = chunkSize,
                 vertices = nativeVertices,
                 normals = nativeNormals,
@@ -79,10 +75,10 @@ namespace Environment.Data
                 liquidIndices = nativeLiquidIndices,
                 foliageIndices = nativeFoliageIndices,
                 transparentIndices = nativeTransparentIndices,
-                counter = m_NativeCounter
+                counter = m_nativeCounter
             }.Schedule();
 
-            int frameCount = 1;
+            var frameCount = 1;
             yield return new WaitUntil(() =>
             {
                 frameCount++;
@@ -92,6 +88,6 @@ namespace Environment.Data
             jobHandle.Complete();
         }
 
-        public void GetMeshInformation(out int verticesSize) => verticesSize = m_NativeCounter.Count * 4;
+        public void GetMeshInformation(out int verticesSize) => verticesSize = m_nativeCounter.Count * 4;
     }
 }

@@ -8,7 +8,7 @@ namespace Environment
     {
         [FieldOffset(0)] public BlockType type;
         
-        [FieldOffset(1)] public Color32 color; // humidity and tempareture effect the weather; 
+        [FieldOffset(1)] public Color32 color; // humidity and temperature effect the weather; 
 
         public Block(BlockType type, Color32 color)
         {

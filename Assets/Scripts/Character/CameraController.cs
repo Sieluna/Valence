@@ -3,23 +3,23 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] Transform target;
-    [SerializeField] float sensitivity = 5.0f;
-    [SerializeField] float height = 2.0f;
+    [SerializeField] private Transform target;
+    [SerializeField] private float sensitivity = 5.0f;
+    [SerializeField] private float height = 2.0f;
 
-    Transform cameraTransform;
-    Vector2 mouseLook;
-    Vector2 input;
-    
+    private Transform m_cameraTransform;
+    private Vector2 m_mouseLook;
+    private Vector2 m_input;
 
-    void Awake()
+
+    private void Awake()
     {
-        cameraTransform = transform;
+        m_cameraTransform = transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = true;
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
@@ -45,19 +45,19 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
-        input = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-        input *= sensitivity;
+        m_input = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        m_input *= sensitivity;
 
-        mouseLook += input;
-        mouseLook.y = Mathf.Clamp(mouseLook.y, -90f, 90f);
+        m_mouseLook += m_input;
+        m_mouseLook.y = Mathf.Clamp(m_mouseLook.y, -90f, 90f);
 
-        Quaternion targetRotation = Quaternion.AngleAxis(mouseLook.x, target.transform.up);
-        Quaternion cameraRotation = targetRotation * Quaternion.AngleAxis(-mouseLook.y, Vector3.right);
+        Quaternion targetRotation = Quaternion.AngleAxis(m_mouseLook.x, target.transform.up);
+        Quaternion cameraRotation = targetRotation * Quaternion.AngleAxis(-m_mouseLook.y, Vector3.right);
 
         target.rotation = targetRotation;
-        cameraTransform.position = target.transform.position + Vector3.up * height;
-        cameraTransform.rotation = cameraRotation;
+        m_cameraTransform.position = target.transform.position + Vector3.up * height;
+        m_cameraTransform.rotation = cameraRotation;
     }
 }

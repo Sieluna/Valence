@@ -10,11 +10,11 @@ namespace Utilities
     [NativeContainer]
     public unsafe struct NativeCounter
     {
-        [NativeDisableUnsafePtrRestriction] private int* m_Counter;
+        [NativeDisableUnsafePtrRestriction] private int* m_counter;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         private AtomicSafetyHandle m_Safety;
-        [NativeSetClassTypeToNullOnSchedule] private DisposeSentinel m_DisposeSentinel;
+        [NativeSetClassTypeToNullOnSchedule] private DisposeSentinel m_disposeSentinel;
 #endif
 
         private Allocator m_AllocatorLabel;
@@ -26,10 +26,10 @@ namespace Utilities
                 throw new ArgumentException(string.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int)));
 #endif
             m_AllocatorLabel = label;
-            m_Counter = (int*)UnsafeUtility.Malloc(UnsafeUtility.SizeOf<int>(), 4, label);
+            m_counter = (int*)UnsafeUtility.Malloc(UnsafeUtility.SizeOf<int>(), 4, label);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 0, label);
+            DisposeSentinel.Create(out m_Safety, out m_disposeSentinel, 0, label);
 #endif
             Count = 0;
         }
@@ -39,8 +39,8 @@ namespace Utilities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
 #endif
-            (*m_Counter) += number;
-            return *m_Counter - number;
+            (*m_counter) += number;
+            return *m_counter - number;
         }
 
         public int Count
@@ -50,37 +50,37 @@ namespace Utilities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
 #endif
-                return *m_Counter;
+                return *m_counter;
             }
             set
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
 #endif
-                *m_Counter = value;
+                *m_counter = value;
             }
         }
 
-        public bool IsCreated => m_Counter != null;
+        public bool IsCreated => m_counter != null;
 
         public void Dispose()
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+            DisposeSentinel.Dispose(ref m_Safety, ref m_disposeSentinel);
 #endif
 
-            UnsafeUtility.Free(m_Counter, m_AllocatorLabel);
-            m_Counter = null;
+            UnsafeUtility.Free(m_counter, m_AllocatorLabel);
+            m_counter = null;
         }
 
         [NativeContainer]
         [NativeContainerIsAtomicWriteOnly]
         public unsafe struct ParallelWriter
         {
-            [NativeDisableUnsafePtrRestriction] private int* m_Counter;
+            [NativeDisableUnsafePtrRestriction] private int* m_counter;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle m_Safety;
+            private AtomicSafetyHandle m_safety;
 #endif
             
             public static implicit operator NativeCounter.ParallelWriter(NativeCounter cnt)
@@ -88,11 +88,11 @@ namespace Utilities
                 NativeCounter.ParallelWriter parallelWriter;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.CheckWriteAndThrow(cnt.m_Safety);
-                parallelWriter.m_Safety = cnt.m_Safety;
-                AtomicSafetyHandle.UseSecondaryVersion(ref parallelWriter.m_Safety);
+                parallelWriter.m_safety = cnt.m_Safety;
+                AtomicSafetyHandle.UseSecondaryVersion(ref parallelWriter.m_safety);
 #endif
 
-                parallelWriter.m_Counter = cnt.m_Counter;
+                parallelWriter.m_counter = cnt.m_counter;
                 return parallelWriter;
             }
 
@@ -100,11 +100,11 @@ namespace Utilities
             {
                 // Increment still needs to check for write permissions
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+                AtomicSafetyHandle.CheckWriteAndThrow(m_safety);
 #endif
                 // The actual increment is implemented with an atomic, since it can be incremented by multiple threads at the same time
-                Interlocked.Add(ref *m_Counter, number);
-                return *m_Counter - number;
+                Interlocked.Add(ref *m_counter, number);
+                return *m_counter - number;
             }
         }
     }

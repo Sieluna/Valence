@@ -11,19 +11,18 @@ namespace Utilities
     {
 #if !UNITY_EDITOR
         private const float MemoryDivider = 1048576;
-        private Canvas m_Canvas;
-        private Text m_Text;
+        private Canvas m_canvas;
+        private Text m_text;
 
-        private ProfilerRecorder m_MainThreadTimeRecorder;
-        private ProfilerRecorder m_SystemMemoryRecorder, m_GCMemoryRecorder;
-        private ProfilerRecorder m_DrawCallsRecorder, m_VerticesRecorder, m_TrianglesRecorder;
+        private ProfilerRecorder m_mainThreadTimeRecorder;
+        private ProfilerRecorder m_systemMemoryRecorder, m_gcMemoryRecorder;
+        private ProfilerRecorder m_drawCallsRecorder, m_verticesRecorder, m_trianglesRecorder;
         
         private static float Fps => 1 / Time.unscaledDeltaTime;
         private static double GetRecorderFrameAverage(ProfilerRecorder recorder)
         {
             var samplesCount = recorder.Capacity;
-            if (samplesCount == 0)
-                return 0;
+            if (samplesCount == 0) return 0;
 
             double r = 0;
             unsafe
@@ -40,40 +39,40 @@ namespace Utilities
         
         private void OnEnable()
         {
-            m_MainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
-            m_SystemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
-            m_GCMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
-            m_DrawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
-            m_VerticesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
-            m_TrianglesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
+            m_mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
+            m_systemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
+            m_gcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
+            m_drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+            m_verticesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
+            m_trianglesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
         }
 
         private void OnDisable()
         {
-            m_MainThreadTimeRecorder.Dispose();
-            m_SystemMemoryRecorder.Dispose();
-            m_GCMemoryRecorder.Dispose();
-            m_DrawCallsRecorder.Dispose();
-            m_VerticesRecorder.Dispose();
-            m_TrianglesRecorder.Dispose();
+            m_mainThreadTimeRecorder.Dispose();
+            m_systemMemoryRecorder.Dispose();
+            m_gcMemoryRecorder.Dispose();
+            m_drawCallsRecorder.Dispose();
+            m_verticesRecorder.Dispose();
+            m_trianglesRecorder.Dispose();
         }
         
         private void Awake()
         {
             #region GUIBuilder
 
-            m_Canvas = gameObject.AddComponent<Canvas>();
-            m_Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            m_Text = Instantiate(new GameObject("Text Field") { hideFlags = HideFlags.HideInHierarchy }, m_Canvas.transform, true).AddComponent<Text>();
-            m_Text.rectTransform.localPosition = new Vector3(10, -10);
-            m_Text.rectTransform.sizeDelta = new Vector2(Screen.width / 4f, Screen.height / 3f);
-            m_Text.rectTransform.anchorMax = Vector2.up;
-            m_Text.rectTransform.anchorMin = Vector2.up;
-            m_Text.rectTransform.pivot = Vector2.up;
-            m_Text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            m_Text.lineSpacing = 1.2f;
-            m_Text.fontSize = math.clamp(Screen.height / 35, 14, 30);
-            m_Text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            m_canvas = gameObject.AddComponent<Canvas>();
+            m_canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            m_text = Instantiate(new GameObject("Text Field") { hideFlags = HideFlags.HideInHierarchy }, m_canvas.transform, true).AddComponent<Text>();
+            m_text.rectTransform.localPosition = new Vector3(10, -10);
+            m_text.rectTransform.sizeDelta = new Vector2(Screen.width / 4f, Screen.height / 3f);
+            m_text.rectTransform.anchorMax = Vector2.up;
+            m_text.rectTransform.anchorMin = Vector2.up;
+            m_text.rectTransform.pivot = Vector2.up;
+            m_text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            m_text.lineSpacing = 1.2f;
+            m_text.fontSize = math.clamp(Screen.height / 35, 14, 30);
+            m_text.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             #endregion
             
@@ -82,11 +81,11 @@ namespace Utilities
 
         private void SysInfoUpdater()
         {
-            m_Text.text = $"Fps: {Fps:F1}  [{GetRecorderFrameAverage(m_MainThreadTimeRecorder) * (1e-6f):F1} ms]\n" +
-                          $"Sys Memory: {m_SystemMemoryRecorder.LastValue / MemoryDivider:F0}MB\n" +
-                          $"GC Memory: {m_GCMemoryRecorder.LastValue / MemoryDivider:F0}MB\n" +
-                          $"Draw Calls: {m_DrawCallsRecorder.LastValue}\n" +
-                          $"Verts: {m_VerticesRecorder.LastValue * (1e-3f):F1}k  Tris: {m_TrianglesRecorder.LastValue * (1e-3f):F1}k";
+            m_text.text = $"Fps: {Fps:F1}  [{GetRecorderFrameAverage(m_mainThreadTimeRecorder) * (1e-6f):F1} ms]\n" +
+                          $"Sys Memory: {m_systemMemoryRecorder.LastValue / MemoryDivider:F0}MB\n" +
+                          $"GC Memory: {m_gcMemoryRecorder.LastValue / MemoryDivider:F0}MB\n" +
+                          $"Draw Calls: {m_drawCallsRecorder.LastValue}\n" +
+                          $"Verts: {m_verticesRecorder.LastValue * (1e-3f):F1}k  Tris: {m_trianglesRecorder.LastValue * (1e-3f):F1}k";
         }
 #endif
     }

@@ -4,44 +4,43 @@ using Environment.Data;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-// ReSharper disable InconsistentNaming
 
 [CustomEditor(typeof(BlockPrefab))]
 public class BlockPrefabViewer : Editor
 {
-    private BlockPrefab m_Prefab;
+    private BlockPrefab m_prefab;
 
-    private ReorderableList m_AtlasUVArray;
+    private ReorderableList m_atlasUVArray;
 
-    private Material m_PreviewMaterial;
-    private Mesh m_CubeMesh;
+    private Material m_previewMaterial;
+    private Mesh m_cubeMesh;
 
-    private readonly BlockType[] m_Caches = new BlockType[2];
-    private readonly string[] m_Direction = {"Right", "Left", "Up", "Down", "Front", "Back"};
+    private readonly BlockType[] m_caches = new BlockType[2];
+    private readonly string[] m_direction = {"Right", "Left", "Up", "Down", "Front", "Back"};
 
     private void OnEnable()
     {
-        m_Prefab = target as BlockPrefab;
+        m_prefab = target as BlockPrefab;
 
-        m_Caches[1] = m_Prefab!.block;
+        m_caches[1] = m_prefab!.block;
 
-        m_PreviewMaterial = new Material(Shader.Find("Hidden/BlockPrefabPreview"));
-        m_CubeMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+        m_previewMaterial = new Material(Shader.Find("Hidden/BlockPrefabPreview"));
+        m_cubeMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-        m_AtlasUVArray = new ReorderableList(serializedObject, serializedObject.FindProperty("atlasPositions"),
+        m_atlasUVArray = new ReorderableList(serializedObject, serializedObject.FindProperty("atlasPositions"),
             false, true, false, false)
         {
             drawHeaderCallback = rect => GUI.Label(rect, "Atlas Positions"),
             elementHeight = EditorGUIUtility.singleLineHeight * 1.2f,
             drawElementCallback = (rect, index, active, focused) =>
             {
-                var item = m_AtlasUVArray.serializedProperty.GetArrayElementAtIndex(index);
+                var item = m_atlasUVArray.serializedProperty.GetArrayElementAtIndex(index);
                 rect.y += 4; // keep a little bit lower
-                EditorGUI.PropertyField(rect, item, new GUIContent(m_Direction[index]));
+                EditorGUI.PropertyField(rect, item, new GUIContent(m_direction[index]));
             },
             elementHeightCallback = index =>
             {
-                var item = m_AtlasUVArray.serializedProperty.GetArrayElementAtIndex(index);
+                var item = m_atlasUVArray.serializedProperty.GetArrayElementAtIndex(index);
                 return EditorGUI.GetPropertyHeight(item, true) * 1.2f;
             }
         };
@@ -58,19 +57,19 @@ public class BlockPrefabViewer : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        m_Caches[0] = (BlockType) EditorGUILayout.EnumPopup("Block Type", m_Prefab.block);
+        m_caches[0] = (BlockType) EditorGUILayout.EnumPopup("Block Type", m_prefab.block);
         EditorGUILayout.Space(5);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("shape"), new GUIContent("Block Shape"));
         EditorGUILayout.Space(10);
-        m_AtlasUVArray.DoLayoutList();
-        if (m_Caches[0] != m_Prefab.block)
+        m_atlasUVArray.DoLayoutList();
+        if (m_caches[0] != m_prefab.block)
         {
-            var fallback = string.IsNullOrWhiteSpace(AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(m_Prefab.GetInstanceID()), m_Caches[0].ToString()));
-            m_Prefab.block = fallback ? m_Caches[0] : m_Caches[1];
-            m_Prefab.name = (fallback ? m_Caches[0] : m_Caches[1]).ToString();
+            var fallback = string.IsNullOrWhiteSpace(AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(m_prefab.GetInstanceID()), m_caches[0].ToString()));
+            m_prefab.block = fallback ? m_caches[0] : m_caches[1];
+            m_prefab.name = (fallback ? m_caches[0] : m_caches[1]).ToString();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            m_Caches[1] = m_Prefab.block;
+            m_caches[1] = m_prefab.block;
         }
 
         serializedObject.ApplyModifiedProperties();
@@ -80,60 +79,61 @@ public class BlockPrefabViewer : Editor
 
     #region BlockPreview
 
-    private PreviewRenderUtility m_PreviewRenderUtility;
+    private PreviewRenderUtility m_previewRenderUtility;
 
-    private Vector2 m_Drag;
+    private Vector2 m_drag;
 
-    private readonly Vector4[] m_Uvs = new Vector4[3];
+    private readonly Vector4[] m_uvs = new Vector4[3];
+
     private static readonly int Uvs = Shader.PropertyToID("uvs");
     private static readonly int Scale = Shader.PropertyToID("scale");
 
     public override bool HasPreviewGUI()
     {
-        if (m_Prefab == null) throw new Exception("No prefab Data");
+        if (m_prefab == null) throw new Exception("No prefab Data");
 
         for (int i = 0; i < 3; i++)
-            m_Uvs[i] = new Vector4(m_Prefab.atlasPositions[i * 2].x, m_Prefab.atlasPositions[i * 2].y, m_Prefab.atlasPositions[i * 2 + 1].x, m_Prefab.atlasPositions[i * 2 + 1].y);
+            m_uvs[i] = new Vector4(m_prefab.atlasPositions[i * 2].x, m_prefab.atlasPositions[i * 2].y, m_prefab.atlasPositions[i * 2 + 1].x, m_prefab.atlasPositions[i * 2 + 1].y);
 
         DestroyPreview();
 
-        m_PreviewRenderUtility = new PreviewRenderUtility();
-        GC.SuppressFinalize(m_PreviewRenderUtility);
-        m_PreviewRenderUtility.camera.fieldOfView = 30f;
+        m_previewRenderUtility = new PreviewRenderUtility();
+        GC.SuppressFinalize(m_previewRenderUtility);
+        m_previewRenderUtility.camera.fieldOfView = 30f;
 
         return true;
     }
 
     public override void OnPreviewGUI(Rect rect, GUIStyle background)
     {
-        m_Drag = Drag2D(m_Drag, rect);
+        m_drag = Drag2D(m_drag, rect);
 
         if (Event.current.type != EventType.Repaint) return;
 
-        if (m_PreviewRenderUtility == null)
+        if (m_previewRenderUtility == null)
         {
             EditorGUI.DropShadowLabel(rect, "Error");
         }
         else
         {
-            m_PreviewMaterial.SetVectorArray(Uvs, m_Uvs);
-            m_PreviewMaterial.SetFloat(Scale, 1f / Shared.AtlasSize.x);
+            m_previewMaterial.SetVectorArray(Uvs, m_uvs);
+            m_previewMaterial.SetFloat(Scale, 1f / Shared.AtlasSize.x);
 
-            m_PreviewRenderUtility.BeginPreview(rect, background);
+            m_previewRenderUtility.BeginPreview(rect, background);
 
-            m_PreviewRenderUtility.DrawMesh(m_CubeMesh, Matrix4x4.identity, m_PreviewMaterial, 0);
+            m_previewRenderUtility.DrawMesh(m_cubeMesh, Matrix4x4.identity, m_previewMaterial, 0);
 
-            m_PreviewRenderUtility.camera.transform.position = Vector2.zero;
-            m_PreviewRenderUtility.camera.transform.rotation = Quaternion.Euler(new Vector3(-m_Drag.y, -m_Drag.x, 0));
-            m_PreviewRenderUtility.camera.transform.position = m_PreviewRenderUtility.camera.transform.forward * -6f;
+            m_previewRenderUtility.camera.transform.position = Vector2.zero;
+            m_previewRenderUtility.camera.transform.rotation = Quaternion.Euler(new Vector3(-m_drag.y, -m_drag.x, 0));
+            m_previewRenderUtility.camera.transform.position = m_previewRenderUtility.camera.transform.forward * -6f;
 
-            m_PreviewRenderUtility.Render(true);
+            m_previewRenderUtility.Render(true);
 
-            m_PreviewRenderUtility.EndAndDrawPreview(rect);
+            m_previewRenderUtility.EndAndDrawPreview(rect);
         }
     }
 
-    private void DestroyPreview() => m_PreviewRenderUtility?.Cleanup();
+    private void DestroyPreview() => m_previewRenderUtility?.Cleanup();
 
     private static Vector2 Drag2D(Vector2 scrollPos, Rect position)
     {
