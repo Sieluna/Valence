@@ -8,6 +8,9 @@ namespace Environment.Data
     {
         public BlockType block;
 
+        [Range(0, 255)]
+        public int hardness;
+
         public BlockShape shape;
         
         /// <summary>

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 410087040}
-  m_IndirectSpecularColor: {r: 0.17705569, g: 0.22164339, b: 0.30391133, a: 1}
+  m_IndirectSpecularColor: {r: 0.17705615, g: 0.22164413, b: 0.30391258, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -105,7 +105,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 2
+    serializedVersion: 3
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -118,7 +118,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    buildHeightMesh: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -169,19 +169,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93850384f6d2932458ffe30619de9657, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WalkSpeed: 6
-  m_RunSpeed: 11
-  m_LimitDiagonalSpeed: 1
-  m_ToggleRun: 0
-  m_JumpSpeed: 8
-  m_Gravity: 20
-  m_FallingThreshold: 10
-  m_SlideWhenOverSlopeLimit: 0
-  m_SlideOnTaggedObjects: 0
-  m_SlideSpeed: 12
-  m_AirControl: 0
-  m_AntiBumpFactor: 0.75
-  m_AntiBunnyHopFactor: 1
+  walkSpeed: 6
+  runSpeed: 11
+  limitDiagonalSpeed: 1
+  toggleRun: 0
+  jumpSpeed: 8
+  gravity: 20
+  fallingThreshold: 10
+  slideWhenOverSlopeLimit: 0
+  slideOnTaggedObjects: 0
+  slideSpeed: 12
+  airControl: 0
+  antiBumpFactor: 0.75
+  antiBunnyHopFactor: 1
 --- !u!143 &227413838
 CharacterController:
   m_ObjectHideFlags: 0
@@ -190,9 +190,17 @@ CharacterController:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 227413835}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.39
   m_SlopeLimit: 45
@@ -242,9 +250,17 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 20.78461
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 20.78461
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -316,9 +332,19 @@ MonoBehaviour:
   m_Dithering: 0
   m_ClearDepth: 1
   m_AllowXRRendering: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+  m_TaaSettings:
+    quality: 3
+    frameInfluence: 0.1
+    jitterScale: 1
+    mipBias: 0
+    varianceClampScale: 0.9
+    contrastAdaptiveSharpening: 0
 --- !u!114 &330585548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,14 +468,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 1
+  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
+  m_RenderingLayers: 1
   m_CustomShadowLayers: 0
   m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 1
 --- !u!114 &410087043
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -541,10 +570,41 @@ MonoBehaviour:
     m_RotationOrder: 4
   useOcclusion: 1
   occlusionRadius: 0.1
+  useBackgroundCloudOcclusion: 0
   sampleCount: 32
   occlusionOffset: 0.05
   scale: 1
   allowOffScreen: 0
+  volumetricCloudOcclusion: 0
+  occlusionRemapCurve:
+    <length>k__BackingField: 2
+    m_Loop: 0
+    m_ZeroValue: 1
+    m_Range: 1
+    m_Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
 --- !u!1 &690527411
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,10 +798,10 @@ MonoBehaviour:
     x: 8
     y: 8
   chunkMaterial:
-  - {fileID: 2100000, guid: bc97d8be6d8443f44b75b7d5ada5a92d, type: 2}
+  - {fileID: 2100000, guid: e8ca50dc10b15e34eb1ef01523e3894c, type: 2}
   - {fileID: 2100000, guid: cdb5a16f31ee9ca43b20ee76fcbdffbf, type: 2}
   - {fileID: 2100000, guid: 810ffeed0b008ce4690300c99508da0d, type: 2}
-  - {fileID: 2100000, guid: bc97d8be6d8443f44b75b7d5ada5a92d, type: 2}
+  - {fileID: 2100000, guid: e8ca50dc10b15e34eb1ef01523e3894c, type: 2}
   maxGenerateChunksInFrame: 1
 --- !u!4 &2139749289
 Transform:

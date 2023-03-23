@@ -17,16 +17,16 @@ public static class Shared
     {
         BlockShape.Block, BlockShape.Transparent, BlockShape.Foliage, BlockShape.Liquid
     };
-    
+
     public static readonly BlockShape[] shapeColliderMask =
     {
         BlockShape.Block, //BlockShape.Transparent
     };
-    
+
     #endregion
 
     #region Data Mapping
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int PackUVCoord(this int2 uv) => (uv.x & 0xF) << 4 | ((uv.y & 0xF) << 0);
 
@@ -34,11 +34,17 @@ public static class Shared
     public static int2 UnpackUVCoord(this int uvs) => new int2((uvs >> 4) & 0xF, (uvs >> 0) & 0xF);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int2 GetBlockUV(this long data, int direction) => ((int) ((data >> (5 - direction) * 8) & 0xFFL)).UnpackUVCoord();
+    public static int2 GetBlockUV(this long data, int direction)
+        => ((int) ((data >> (5 - direction) * 8) & 0xFFL)).UnpackUVCoord();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long GetBlockShape(this long data) => (data >> 56) & 0xFFL;
-    
+    public static long GetBlockHardness(this long data)
+        => (data >> 48) & 0xFFL;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetBlockShape(this long data)
+        => (data >> 56) & 0xFFL;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int2 To2DIndex(this int index, int size)
         => new(index / size, index % size);
@@ -66,7 +72,7 @@ public static class Shared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float3 ToWorld(this int3 chunkPosition, int3 chunkSize)
         => chunkPosition * chunkSize;
-        
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int3 ToGrid(this Vector3 worldPosition, int3 chunkPosition, int3 chunkSize)
         => ToGrid(Floor(worldPosition), chunkPosition, chunkSize);
@@ -78,8 +84,8 @@ public static class Shared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool BoundaryCheck(this int3 position, int3 chunkSize)
         => chunkSize.x > position.x && chunkSize.y > position.y && chunkSize.z > position.z &&
-           position.x >= 0 && position.y >= 0 && position.z >= 0;
-        
+           position is { x: >= 0, y: >= 0, z: >= 0 };
+
     public static int InvertDirection(int direction)
     {
         int axis = direction / 2; // 0(+x,-x), 1(+y,-y), 2(+z,-z)
@@ -97,7 +103,7 @@ public static class Shared
 
         return invDirection;
     }
-    
+
     private static int3 Mod(int3 v, int3 m)
     {
         var r = (int3) math.fmod(v, m);

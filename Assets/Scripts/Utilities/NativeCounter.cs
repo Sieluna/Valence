@@ -17,7 +17,7 @@ namespace Utilities
         [NativeSetClassTypeToNullOnSchedule] private DisposeSentinel m_disposeSentinel;
 #endif
 
-        private Allocator m_AllocatorLabel;
+        private Allocator m_allocatorLabel;
 
         public NativeCounter(Allocator label)
         {
@@ -25,7 +25,7 @@ namespace Utilities
             if (!UnsafeUtility.IsBlittable<int>())
                 throw new ArgumentException(string.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int)));
 #endif
-            m_AllocatorLabel = label;
+            m_allocatorLabel = label;
             m_counter = (int*)UnsafeUtility.Malloc(UnsafeUtility.SizeOf<int>(), 4, label);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -69,7 +69,7 @@ namespace Utilities
             DisposeSentinel.Dispose(ref m_Safety, ref m_disposeSentinel);
 #endif
 
-            UnsafeUtility.Free(m_counter, m_AllocatorLabel);
+            UnsafeUtility.Free(m_counter, m_allocatorLabel);
             m_counter = null;
         }
 

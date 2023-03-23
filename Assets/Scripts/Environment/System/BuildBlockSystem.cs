@@ -22,8 +22,11 @@ namespace Environment.System
             Array.ForEach(m_blockPath, prefab =>
             {
                 var data = 0L;
-                data |= (UnsafeUtility.EnumToInt(prefab.shape) & 0xFFL) << 56; // blockTypeBuffer
-                data |= (255 & 0xFFL) << 48; // empty byte
+                // Block shape buffer [0 - 256]
+                data |= (UnsafeUtility.EnumToInt(prefab.shape) & 0xFFL) << 56;
+                // Block hardness buffer [0 - 256]
+                data |= (Mathf.RoundToInt(prefab.hardness * 16) & 0xFFL) << 48;
+                // Block atlas [0 - 16] * 6
                 for (int i = 0, currentBit = 40; i < 6; i++, currentBit -= 8)
                     data |= (prefab.atlasPositions[i].PackUVCoord() & 0xFFL) << currentBit;
 
